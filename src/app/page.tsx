@@ -1,102 +1,175 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, Sparkles, NotebookPen, Timer, Wand2, Lock, Calendar } from "lucide-react";
+import BadgeButton from "@/components/ui/badge-button";
+import Link from 'next/link';
+
+export default function LandingPage() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-neutral-50 dark:from-neutral-900 dark:to-black text-neutral-800 dark:text-neutral-100">
+      {/* Hero Section */}
+      <header className="w-full text-center px-4 min-h-svh flex flex-col justify-center">
+        <div className="relative inline-block w-fit mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
+          >
+            du-be-doos
+          </motion.h1>
+          <motion.div
+            initial={{ x: 0, y: -10, rotate: 0 }}
+            animate={{
+              x: [0, 10, -10, 5, -5, 0],
+              y: [-10, -15, -5, -20, -10, -10],
+              rotate: [0, 10, -10, 5, -5, 0]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 4,
+              ease: "easeInOut"
+            }}
+            className="absolute top-0 right-0"
+          >
+            <Sparkles className="text-yellow-400 w-6 h-6" />
+          </motion.div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mt-6 text-5xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <BadgeButton> Now with AI Integration </BadgeButton>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-3 text-lg md:text-xl max-w-2xl mx-auto text-neutral-600 dark:text-neutral-300"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          A minimalist note-taking app that clears the clutter of your mind and boosts your productivity with{" "}
+          <span className="font-semibold">Quickees</span>, <span className="font-semibold">AI Magic Buttons</span>,
+          and <span className="font-semibold">Deadline Tracking</span>.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8 flex justify-center gap-4"
         >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+          <Link href="/login">
+            <Button size="lg" className="rounded-full px-6 text-lg" >
+              Get Started <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="lg" className="rounded-full px-6 text-lg">
+                How it works
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold">How du-be-doos Works</DialogTitle>
+              </DialogHeader>
+              <ul className="list-disc pl-5 space-y-2 text-neutral-700 dark:text-neutral-300">
+                <li>✨ Double-click on a Quickee to enhance it</li>
+                <li>🔮 Use Magic Buttons to improve your notes</li>
+                <li>📸 Notes supports uploading images too</li>
+                <li>📌 Secure notes with password</li>
+                <li>📅 Click a date to save notes for that day</li>
+                <li>⏳ Track project deadlines with reminders</li>
+                <li>📝 Save and manage your favourite links</li>
+              </ul>
+            </DialogContent>
+          </Dialog>
+        </motion.div>
+      </header>
+
+      {/* Features Section */}
+      <section className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6 py-20">
+        {[
+          {
+            title: "Quickees",
+            desc: "Capture thoughts instantly and enhance with a double click.",
+            icon: NotebookPen,
+          },
+          {
+            title: "AI Magic",
+            desc: "Enhance, rewrite, and organize notes with AI magic buttons.",
+            icon: Wand2,
+          },
+          {
+            title: "Secure Notes",
+            desc: "Protect your notes with a password.",
+            icon: Lock,
+          },
+          {
+            title: "Smart Calendar",
+            desc: "Save notes for specific dates for easy organization.",
+            icon: Calendar,
+          },
+          {
+            title: "Deadlines",
+            desc: "Track time left for projects and never miss a deadline again.",
+            icon: Timer,
+          },
+          {
+            title: "Upload Images",
+            desc: "Add images to your notes to make them more meaningful.",
+            icon: Timer,
+          },
+        ].map((f, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Card className="shadow-lg hover:shadow-xl transition rounded-2xl bg-white dark:bg-neutral-900">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <f.icon className="w-12 h-12 text-purple-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+                <p className="text-neutral-600 dark:text-neutral-400">{f.desc}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* CTA Section */}
+      <section className="text-center py-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="text-4xl font-bold"
+        >
+          Ready to clear your mind clutter?
+        </motion.h2>
+        <p className="mt-4 text-lg opacity-90">Start using du-be-doos today and make productivity effortless.</p>
+        <Link href="/login">
+          <Button size="lg" variant="secondary" className="mt-6 rounded-full px-8">
+            Start Now <Sparkles className="ml-2 h-5 w-5" />
+          </Button>
+        </Link>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-10 text-center text-sm text-neutral-500 dark:text-neutral-400 border-t border-neutral-200 dark:border-neutral-800">
+        <p>© {new Date().getFullYear()} du-be-doos. All rights reserved.</p>
       </footer>
     </div>
   );

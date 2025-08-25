@@ -72,7 +72,39 @@
 
 ## 📥 Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/du-be-doos-2.0.git
-   cd du-be-doos-2.0
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/du-be-doos-2.0.git
+cd du-be-doos-2.0
+```
+### 2. Install dependencies
+```bash
+npm install
+```
+### 3. Set up environment variables
+```bash
+MONGODB_URI=your_mongodb_uri
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+GEMINI_API_KEY=your_gemini_api_key
+
+```
+### 4. Run the development server
+```bash
+npm run dev
+```
+### 📦 Folder Structure
+```bash
+du-be-doos-2.0/
+├─ components/       # UI components and reusable widgets
+├─ pages/            # Next.js pages and API routes
+├─ public/           # Static assets and images
+├─ styles/           # Global CSS and Tailwind configuration
+├─ lib/              # Utility functions
+├─ hooks/            # Custom React hooks
+├─ context/          # React context for state management
+├─ scripts/          # Any helper scripts
+├─ .env.local        # Environment variables (not tracked in git)
+└─ README.md         # Project documentation
+
+```   

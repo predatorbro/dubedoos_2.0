@@ -108,3 +108,17 @@ du-be-doos-2.0/
 └─ README.md         # Project documentation
 
 ```   
+
+### 🔗 Links
+
+***Live Demo: https://yourprojectdomain.com***
+
+***GitHub Repository: https://github.com/yourusername/du-be-doos-2.0***
+
+
+
+---
+
+If you want, I can **also make a “landing-page style README”** with **interactive badges, GIFs, icons, and sparkles** that looks like your app visually inside GitHub. It will make your README **super eye-catching**.  
+
+Do you want me to do that next?

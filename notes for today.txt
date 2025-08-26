@@ -2,11 +2,5 @@ notes for today
 
 08/26
 
-
-fix calander font size
-
-fix console errors
-
-fix hydration
-
+ 
 optimize app

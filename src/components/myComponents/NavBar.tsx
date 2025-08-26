@@ -371,7 +371,7 @@ export default function Component() {
           {/* theme selector */}
           <Select defaultValue={theme} value={theme} onValueChange={(value) => handleTheme(value)} >
             <SelectTriggerCustom
-              id={`language-${Math.random().toString(36).substring(2, 15)}`}
+              id={`theme`}
               className="[&>svg]:text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground 
               h-8 border-none px-2 shadow-none [&>svg]:shrink-0 flex justify-center"
               aria-label="Select language"

@@ -1,6 +1,5 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { act } from "react";
 
 export interface Note {
   id: string;
@@ -9,9 +8,13 @@ export interface Note {
   date: string;
   pinned: boolean;
   visibility: boolean;
-  images: any[];
+  images: Image[];
   deadLine: string | undefined;
+}
 
+export interface Image {
+  secure_url: string,
+  public_id: string,
 }
 
 export interface Section {
@@ -77,7 +80,6 @@ export const notezSlice = createSlice({
         visibility: true,
         images: [],
         deadLine: undefined
-
       });
 
       if (typeof window !== "undefined") {
@@ -135,7 +137,7 @@ export const notezSlice = createSlice({
         localStorage.setItem("sections", JSON.stringify(state.sections));
       }
     },
-    saveImages: (state, action: PayloadAction<{ sectionID: string; id: string; images: { secure_url: string }[] }>) => {
+    saveImages: (state, action: PayloadAction<{ sectionID: string; id: string; images: Image[] }>) => {
       const section = state.sections.find((s) => s.sectionID === action.payload.sectionID);
       if (!section) return;
       const note = section?.sectionNotes.find((n) => n.id === action.payload.id);

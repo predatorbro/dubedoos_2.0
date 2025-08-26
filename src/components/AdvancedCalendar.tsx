@@ -92,16 +92,15 @@ export default function AdvancedCalendar() {
           month_caption: "mt-4 mb-2 text-center",
           head_cell: "text-sm font-semibold",
 
-          weekdays: "flex gap-2 mx-auto lg:mx-8 xl:mx-10 2xl:mx-15 mb-3", //day name
+          weekdays: "text-sm sm:text-base flex gap-2 mx-auto lg:mx-8 xl:mx-10 2xl:mx-15 mb-3", //day name
           week: "flex justify-between items-center gap-2 mx-auto lg:mx-8 xl:mx-10 2xl:mx-15", //
 
           nav: "absolute flex gap-5 top-3 right-3 xl:top-5 xl:right-5 ",
           nav_icon: "h-16 w-16 text-5xl",
           outside: "opacity-0 pointer-events-none",
+          day_button: " sm:!text-base font-light xl:size-10 2xl:size-12",
 
-          day_button: "xl:size-10 2xl:size-12",
-
-          day: " flex items-center justify-center rounded-lg cursor-pointer text-lg transition-colors hover:text-accent-foreground mx-auto my-2",
+          day: "flex items-center justify-center rounded-lg cursor-pointer  transition-colors hover:text-accent-foreground mx-auto my-2",
 
           today: "!bg-transparent border-2 border-primary !text-primary scale-120 hover:border-transparent",
 

@@ -41,6 +41,7 @@ import Image from 'next/image'
 import Heartbeatdiv from './Heartbeatdiv'
 import PasswordDialog from '../PasswordDialog'
 import { useRouter } from 'next/navigation'
+import { CloudinaryImage } from '@/lib/cloudinary'
 
 
 function BigTodo({ noteData, sectionID }: any) {
@@ -470,7 +471,7 @@ function BigTodo({ noteData, sectionID }: any) {
         </div>
         {/* carousel component */}
         {showCarousel && <FullScreenCarousel
-            images={images}
+            images={images as CloudinaryImage[]}
             onClose={() => setShowCarousel(false)}
             autoplayDelay={2000}
             showPagination={false}

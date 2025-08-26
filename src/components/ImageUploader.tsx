@@ -33,7 +33,7 @@ export default function ImageUploader({ onFilesChange }: ImageUploaderProps) {
 
   useEffect(() => {
     if (onFilesChange) {
-      onFilesChange(files.map(f => f.file))
+      onFilesChange(files.map(f => f.file).filter(file => file instanceof File))
     }
   }, [files])
 

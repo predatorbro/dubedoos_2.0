@@ -1,3 +1,4 @@
+import { CloudinaryImage } from "@/lib/cloudinary";
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -8,7 +9,7 @@ export interface Note {
   date: string;
   pinned: boolean;
   visibility: boolean;
-  images: Image[];
+  images: CloudinaryImage[];
   deadLine: string | undefined;
 }
 
@@ -137,7 +138,7 @@ export const notezSlice = createSlice({
         localStorage.setItem("sections", JSON.stringify(state.sections));
       }
     },
-    saveImages: (state, action: PayloadAction<{ sectionID: string; id: string; images: Image[] }>) => {
+    saveImages: (state, action: PayloadAction<{ sectionID: string; id: string; images: CloudinaryImage[] }>) => {
       const section = state.sections.find((s) => s.sectionID === action.payload.sectionID);
       if (!section) return;
       const note = section?.sectionNotes.find((n) => n.id === action.payload.id);

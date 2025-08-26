@@ -4,7 +4,7 @@ import { LoaderOne } from '@/components/ui/loader'
 import { signIn } from 'next-auth/react'
 import React, { useEffect, } from 'react'
 
-function page() {
+function Page() {
     useEffect(() => {
         signIn('google', { callbackUrl: '/workspace' })
     }, [])
@@ -15,4 +15,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

@@ -1,8 +1,12 @@
 notes for today
 
-08/24
+08/26
 
 
-##
+fix calander font size
 
-fix home / landing page
+fix console errors
+
+fix hydration
+
+optimize app

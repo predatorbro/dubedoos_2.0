@@ -11,13 +11,14 @@ import LinkSaverModal, { LinkCategory } from "@/components/myComponents/LinkSave
 export function SideBarCustom({ children }: { children: React.ReactNode }) {
 
     const [links, setLinks] = useState<LinkCategory[]>([])
-    const [open, setOpen] = useState(window.innerWidth < 1024 ? false : true);
+    const [open, setOpen] = useState(true);
 
     useEffect(() => {
         const storedLinks = localStorage.getItem("Links");
         if (storedLinks) {
             setLinks(JSON.parse(storedLinks));
         }
+        setOpen(window.innerWidth < 1024 ? false : true)
     }, []);
     useEffect(() => {
         localStorage.setItem("Links", JSON.stringify(links));

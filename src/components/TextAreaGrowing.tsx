@@ -1,6 +1,5 @@
 "use client"
 import { useEffect, useRef } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import TextareaAutosize from "react-textarea-autosize";
 
 interface AutoGrowTextareaProps {
@@ -20,31 +19,6 @@ export default function AutoGrowTextarea({
   id,
   className = "",
 }: AutoGrowTextareaProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const screen = useRef<HTMLDivElement>(null);
-
-  // Resize handler
-  const resize = () => {
-    const txt = textareaRef.current;
-    const display = screen.current;
-
-    console.log(screen.current?.offsetHeight)
-
-    if (txt) {
-      txt.style.height = "auto";
-      txt.style.height = `${display?.offsetHeight}px`;
-    }
-  };
-
-  // Resize whenever value changes (like after LS restore)
-  useEffect(() => {
-    resize();
-  }, [value, disabled]);
-
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    resize();
-    setContent(e.target.value);
-  };
 
   const linkRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -89,8 +63,8 @@ export default function AutoGrowTextarea({
 
       <TextareaAutosize
         id={id}
-        placeholder=" "
-        onChange={handleInput}
+        placeholder=""
+        onChange={(e) => setContent(e.target.value)}
         minRows={4}
         className={`resize-none w-full z-auto overflow-hidden rounded-none 
           bg-transparent shadow-none text-sm p-2 text-muted-foreground/80

@@ -81,7 +81,7 @@ export default function LandingPage() {
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold">How du-be-doos Works</DialogTitle>
+                <DialogTitle className="text-xl font-bold">How du-be-doos Works ?</DialogTitle>
               </DialogHeader>
               <ul className="list-disc pl-5 space-y-2 text-neutral-700 dark:text-neutral-300">
                 <li>✨ Double-click on a Quickee to enhance it</li>
@@ -138,7 +138,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: i * 0.2 }}
             viewport={{ once: true }}
           >
-            <Card className="shadow-lg hover:shadow-xl transition rounded-2xl bg-white dark:bg-neutral-900">
+            <Card className="shadow-lg hover:shadow-xl transition rounded-2xl h-full bg-white dark:bg-neutral-900">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <f.icon className="w-12 h-12 text-purple-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">{f.title}</h3>

@@ -45,7 +45,7 @@ export default async function RootLayout({
             {/* loader provider */}
             <LoaderProvider>
               {/* theme provider */}
-              <ThemeProvider attribute="class" defaultTheme="light" storageKey="theme" enableSystem={false}>
+              <ThemeProvider attribute="class" defaultTheme="dark" storageKey="theme" enableSystem={false}>
                 {/* cursor click effect */}
                 <ClickSparkWrapper >
                   <>

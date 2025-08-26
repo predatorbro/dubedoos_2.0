@@ -146,14 +146,15 @@ export default function Component() {
         <div className="flex flex-1 items-center gap-3">
           {/* Mobile menu trigger */}
           <Button
-            className="group size-8 md:hidden"
+            className="group size-8 md:hidden pointer-events-none"
             variant="ghost"
             size="icon"
+            disabled
           >
           </Button>
           <div className="flex items-center gap-6">
-            {/* Logo */}
-            <p
+
+            <div
               className=" relative flex items-center gap-2 font-semibold text-xl text-primary/90 transition-colors duration-200"
             >
               <span>du-be-doos | 2.0</span>
@@ -174,7 +175,7 @@ export default function Component() {
                 <Sparkles className="text-yellow-400" size={16} />
               </motion.div>
 
-            </p>
+            </div>
 
           </div>
         </div>

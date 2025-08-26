@@ -9,7 +9,7 @@ function page() {
         signIn('google', { callbackUrl: '/workspace' })
     }, [])
     return (
-        <div className='h-lvh w-lvw bg-foreground flex items-center justify-center'>
+        <div className='h-lvh w-lvw bg-background flex items-center justify-center'>
             <LoaderOne />
         </div>
     )

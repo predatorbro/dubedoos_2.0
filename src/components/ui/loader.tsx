@@ -1,16 +1,17 @@
 "use client";
-import { Easing, motion } from "motion/react";
+import { motion } from "motion/react";
 import React from "react";
 
 export const LoaderOne = () => {
-  const transition = (delay: number) => ({
-    duration: 2,
-    repeat: Infinity,
-    repeatType: "loop" as const,
-    delay,
-    ease: "easeInOut" as Easing
-  })
-
+  const transition = (x: number) => {
+    return {
+      duration: 1,
+      repeat: Infinity,
+      repeatType: "loop" as const,
+      delay: x * 0.2,
+      ease: "easeInOut" as any,
+    };
+  };
   return (
     <div className="flex items-center gap-2">
       <motion.div
@@ -48,13 +49,15 @@ export const LoaderOne = () => {
 };
 
 export const LoaderTwo = () => {
-  const transition = (delay: number) => ({
-    duration: 2,
-    repeat: Infinity,
-    repeatType: "loop" as const,
-    delay,
-    ease: "easeInOut" as Easing
-  })
+  const transition = (x: number) => {
+    return {
+      duration: 2,
+      repeat: Infinity,
+      repeatType: "loop" as const,
+      delay: x * 0.2,
+      ease: "easeInOut" as any,
+    };
+  };
   return (
     <div className="flex items-center">
       <motion.div
@@ -127,7 +130,6 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
       <motion.span
         animate={{
           skewX: [0, -40, 0],
-          skewY: [0, -40, 0],
           scaleX: [1, 2, 1],
         }}
         transition={{

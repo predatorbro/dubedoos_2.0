@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { memo, useEffect, useMemo, useState } from "react"
 import {
   eachYearOfInterval,
   endOfYear,
@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { json } from "stream/consumers"
 
-export default function AdvancedCalendar() {
+function AdvancedCalendar() {
   const today = new Date()
   const [month, setMonth] = useState(today)
   const [date, setDate] = useState<Date | undefined>(today)
@@ -143,61 +143,66 @@ export default function AdvancedCalendar() {
         }}
       />
 
-      {/* Modal for todos */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {date ? format(date, "MMMM dd, yyyy") : "No Date"}
-            </DialogTitle>
-          </DialogHeader>
+      {useMemo(() => {
+        return (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {date ? format(date, "MMMM dd, yyyy") : "No Date"}
+                </DialogTitle>
+              </DialogHeader>
 
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <Input
-                value={newTodo}
-                onChange={(e) => setNewTodo(e.target.value)}
-                placeholder="Add todo..."
-              />
-              <Button onClick={handleAddTodo} size="icon"
-                className="aspect-square "
-              >
-                <Plus size={16} />
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              {date && todos[format(date, "yyyy-MM-dd")]?.map((todo, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center rounded-md border p-2 text-sm"
-                  onDoubleClick={handleMagic}
-                >
-                  {todo}
-                  <Button
-                    onClick={() =>
-                      handleDeleteTodo(format(date, "yyyy-MM-dd"), idx)
-                    }
-                    size="icon"
-                    variant="ghost"
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    value={newTodo}
+                    onChange={(e) => setNewTodo(e.target.value)}
+                    placeholder="Add todo..."
+                  />
+                  <Button onClick={handleAddTodo} size="icon"
+                    className="aspect-square "
                   >
-                    <X size={14} />
+                    <Plus size={16} />
                   </Button>
                 </div>
-              ))}
-              {date && (!todos[format(date, "yyyy-MM-dd")]?.length) && (
-                <p className="text-muted-foreground text-sm">
-                  No todos yet. Add one above.
-                </p>
-              )}
-            </div>
-          </div>
 
-          <DialogFooter>
-            <Button onClick={() => setOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                <div className="space-y-2">
+                  {date && todos[format(date, "yyyy-MM-dd")]?.map((todo, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center rounded-md border p-2 text-sm"
+                      onDoubleClick={handleMagic}
+                    >
+                      {todo}
+                      <Button
+                        onClick={() =>
+                          handleDeleteTodo(format(date, "yyyy-MM-dd"), idx)
+                        }
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  ))}
+                  {date && (!todos[format(date, "yyyy-MM-dd")]?.length) && (
+                    <p className="text-muted-foreground text-sm">
+                      No todos yet. Add one above.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button onClick={() => setOpen(false)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )
+      }, [open,newTodo])}
+
     </div>
   )
 }
+export default memo(AdvancedCalendar)

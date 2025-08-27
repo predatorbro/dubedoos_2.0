@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState, useEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -32,13 +32,13 @@ export interface LinkCategory {
     links: LinkItem[];
 }
 
-function LinkSaverModal({
+const LinkSaverModal = memo(({
     setLinks,
     Links,
 }: {
     setLinks: React.Dispatch<React.SetStateAction<LinkCategory[]>>;
     Links: LinkCategory[];
-}) {
+}) => {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "manage">("add");
 
@@ -49,13 +49,8 @@ function LinkSaverModal({
     const [category, setCategory] = useState("");
     const [newCategory, setNewCategory] = useState("");
 
-    const [categories, setCategories] = useState<string[]>([]);
-
-    useEffect(() => {
-        const prev = Links.map(link => link.category);
-        setCategories(prev)
-    }, [Links])
-
+    // derive categories from Links
+    const categories = useMemo(() => Links.map(link => link.category), [Links]);
 
     const [selectedCat, setSelectedCat] = useState("");
 
@@ -132,6 +127,34 @@ function LinkSaverModal({
         };
     }, [category, newCategory]);
 
+    const previewCircle = useMemo(() => (
+        <div className="flex justify-center mb-3">
+            <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-20 h-20 object-contain rounded-full border flex items-center justify-center bg-border relative overflow-hidden"
+            >
+                {favicon ? (
+                    <Image
+                        fill
+                        src={favicon}
+                        alt="favicon"
+                        className="object-contain rounded-full"
+                    />
+                ) : (
+                    <span className="text-2xl font-bold">
+                        {label?.charAt(0).toUpperCase()}
+                    </span>
+                )}
+            </motion.div>
+        </div>
+    ), [favicon, label]);
+
+    const selectedLinks = useMemo(() => (
+        Links.find((c) => c.category === selectedCat)?.links ?? []
+    ), [Links, selectedCat]);
+
     return (
         <div className="flex items-center justify-center bg-muted">
             <Dialog open={open} onOpenChange={setOpen} >
@@ -177,27 +200,7 @@ function LinkSaverModal({
                     {mode === "add" && (
                         <>
                             {/* Preview Circle */}
-                            <div className="flex justify-center mb-3">
-                                <motion.div
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="w-20 h-20 object-contain rounded-full border flex items-center justify-center bg-border relative overflow-hidden"
-                                >
-                                    {favicon ? (
-                                        <Image
-                                            fill
-                                            src={favicon}
-                                            alt="favicon"
-                                            className="object-contain rounded-full"
-                                        />
-                                    ) : (
-                                        <span className="text-2xl font-bold">
-                                            {label?.charAt(0).toUpperCase()}
-                                        </span>
-                                    )}
-                                </motion.div>
-                            </div>
+                            {previewCircle}
 
                             {/* Inputs */}
                             <div className="grid gap-4">
@@ -279,40 +282,38 @@ function LinkSaverModal({
                             {/* Links inside category */}
                             {selectedCat && (
                                 <div className="space-y-2 max-h-60 overflow-y-auto">
-                                    {Links.find((c) => c.category === selectedCat)?.links.map(
-                                        (link, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="flex items-center justify-between bg-border rounded-md px-3 py-2"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    {link.favicon ? (
-                                                        <Image
-                                                            src={link.favicon}
-                                                            alt={link.label}
-                                                            width={20}
-                                                            height={20}
-                                                            className="rounded-sm"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs font-medium bg-border w-6 h-6 rounded-full flex items-center justify-center">
-                                                            {link.label.charAt(0).toUpperCase()}
-                                                        </span>
-                                                    )}
-                                                    <span className="text-sm">{link.label}</span>
-                                                </div>
-                                                <Button
-                                                    size="sm"
-                                                    variant="destructive"
-                                                    onClick={() =>
-                                                        handleDeleteLink(selectedCat, idx)
-                                                    }
-                                                >
-                                                    Delete
-                                                </Button>
+                                    {selectedLinks.map((link, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex items-center justify-between bg-border rounded-md px-3 py-2"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                {link.favicon ? (
+                                                    <Image
+                                                        src={link.favicon}
+                                                        alt={link.label}
+                                                        width={20}
+                                                        height={20}
+                                                        className="rounded-sm"
+                                                    />
+                                                ) : (
+                                                    <span className="text-xs font-medium bg-border w-6 h-6 rounded-full flex items-center justify-center">
+                                                        {link.label.charAt(0).toUpperCase()}
+                                                    </span>
+                                                )}
+                                                <span className="text-sm">{link.label}</span>
                                             </div>
-                                        )
-                                    )}
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                onClick={() =>
+                                                    handleDeleteLink(selectedCat, idx)
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
@@ -334,6 +335,6 @@ function LinkSaverModal({
             </Dialog>
         </div>
     );
-}
+})
 
 export default memo(LinkSaverModal)

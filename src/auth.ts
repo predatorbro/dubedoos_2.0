@@ -1,6 +1,7 @@
-import NextAuth from "next-auth"
+
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from 'next-auth'
+import { getServerSession } from 'next-auth'
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -18,4 +19,8 @@ export const authOptions: NextAuthOptions = {
     },
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth(authOptions)
+// In next-auth v4, prefer getServerSession for server usage
+export const auth = () => getServerSession(authOptions)
+
+// For client usage, import signIn/signOut from 'next-auth/react'
+// export { signIn, signOut } from 'next-auth/react'

@@ -1,6 +1,5 @@
 "use client"
-import HoverToolTipButton from '../HoverToolTipButton'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { deleteNote, editNote, Note, setDeadLine, saveImages, togglePin, toggleVisibility, deleteImage } from '@/store/features/notezSlice'
 import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '@/store/store'
@@ -25,7 +24,7 @@ import {
     NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import ImageUploader from '../ImageUploader'
 import { Button } from '../ui/button'
 import { motion, AnimatePresence } from "framer-motion"
@@ -921,4 +920,4 @@ function BigTodo({ noteData, sectionID }: any) {
     return body
 }
 
-export default BigTodo
+export default memo(BigTodo)

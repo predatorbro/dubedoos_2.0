@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react"
+import { memo, useState } from "react"
 
 import UserMenu from "@/components/user-menu"
 import { Button } from "@/components/ui/button"
@@ -158,22 +158,7 @@ export default function Component() {
               className=" relative flex items-center gap-2 font-semibold text-xl text-primary/90 transition-colors duration-200"
             >
               <span>du-be-doos | 2.0</span>
-              <motion.div
-                initial={{ x: 0, y: -10, rotate: 0 }}
-                animate={{
-                  x: [0, 10, -10, 5, -5, 0],
-                  y: [-10, -15, -5, -20, -10, -10],
-                  rotate: [0, 10, -10, 5, -5, 0]
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 4,
-                  ease: "easeInOut"
-                }}
-                className="absolute top-0 -right-2"
-              >
-                <Sparkles className="text-yellow-400" size={16} />
-              </motion.div>
+              <PlayginStar />
 
             </div>
 
@@ -398,3 +383,22 @@ export default function Component() {
     </header>
   )
 }
+
+const PlayginStar = memo(() => {
+  return <motion.div
+    initial={{ x: 0, y: -10, rotate: 0 }}
+    animate={{
+      x: [0, 10, -10, 5, -5, 0],
+      y: [-10, -15, -5, -20, -10, -10],
+      rotate: [0, 10, -10, 5, -5, 0]
+    }}
+    transition={{
+      repeat: Infinity,
+      duration: 4,
+      ease: "easeInOut"
+    }}
+    className="absolute top-0 -right-2"
+  >
+    <Sparkles className="text-yellow-400" size={16} />
+  </motion.div>
+})

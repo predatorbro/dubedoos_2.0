@@ -1,6 +1,7 @@
 
 import { useSelector } from "react-redux";
 import OneSection from "./OneSection";
+import { memo } from "react";
 
 const Sections = () => {
     const sections = useSelector((state: any) => state.notez.sections);
@@ -15,4 +16,4 @@ const Sections = () => {
     )
 }
 
-export default Sections
+export default memo(Sections)

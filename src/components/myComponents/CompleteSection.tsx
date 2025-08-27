@@ -3,6 +3,7 @@ import LeftSide from "./LeftSide";
 import MultipleSelectionCalender from "@/components/Multi-Calendar";
 import AdvancedCalendar from "@/components/AdvancedCalendar";
 import Sections from "./AllSections";
+import { memo } from "react";
 
 function CompleteSection() {
   return (
@@ -24,4 +25,4 @@ function CompleteSection() {
   );
 }
 
-export default CompleteSection;
+export default memo(CompleteSection);

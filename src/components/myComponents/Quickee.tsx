@@ -102,9 +102,9 @@ function Quickee({ id, todo, status }: props) {
                 <QuickInput id={id} className="shadow-none py-0 text-ring text-sm outline-none border-none pl-10" value={quickee} onChange={handleInputChange} placeHolder="List your todos..." disabled />
             }
 
-            <SpecButton className="border-blue-500 scale-75 cursor-pointer" children={editSaveIcon} onClick={editHandler} />
+            <SpecButton id={id} className="border-blue-500 scale-75 cursor-pointer" children={editSaveIcon} onClick={editHandler} />
 
-            <SpecButton onClick={useCallback(() => { dispatch(deleteQuickees(id)) }, [dispatch, id])}
+            <SpecButton id={id} onClick={useCallback(() => { dispatch(deleteQuickees(id)) }, [dispatch, id])}
                 className="border-red-500 scale-75 cursor-pointer"
                 children={trashIcon}
             />

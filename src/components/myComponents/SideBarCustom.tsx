@@ -1,29 +1,20 @@
 "use client";
 import React, { useEffect, useState, useCallback, useMemo, memo } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
+import { Sidebar, SidebarBody, SidebarLink } from "../ui/SidebarLink";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { Menu, SidebarClose, SidebarOpen } from "lucide-react";
-import LinkSaverModal, { LinkCategory } from "@/components/myComponents/LinkSaver";
+import { Bookmark, SidebarClose, SidebarOpen } from "lucide-react";
+import LinkSaverModal from "@/components/myComponents/LinkSaver";
 
 
 
-export function SideBarCustom({ children }: { children: React.ReactNode }) {
+export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) => {
 
-    const [links, setLinks] = useState<LinkCategory[]>([])
     const [open, setOpen] = useState(true);
 
     useEffect(() => {
-        const storedLinks = localStorage.getItem("Links");
-        if (storedLinks) {
-            setLinks(JSON.parse(storedLinks));
-        }
         setOpen(window.innerWidth < 1024 ? false : true)
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem("Links", JSON.stringify(links));
-    }, [links]);
 
     const toggleOpen = useCallback(() => {
         setOpen(prev => !prev);
@@ -44,8 +35,8 @@ export function SideBarCustom({ children }: { children: React.ReactNode }) {
                     className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
                 >
                     <div className="text-center text-2xl font-semibold flex justify-center items-center gap-2">
-                        <Menu />
-                        menu
+                        <Bookmark />
+                        Bookmarks
                     </div>
                 </motion.span>
             )}
@@ -55,6 +46,12 @@ export function SideBarCustom({ children }: { children: React.ReactNode }) {
     const toggleIcon = useMemo(() => (
         open ? <SidebarClose /> : <SidebarOpen />
     ), [open]);
+
+    // Memoize the sidebar link component to prevent re-renders
+    const memoizedSidebarLink = useMemo(() => <SidebarLink />, []);
+
+    // Memoize the link saver modal to prevent re-renders
+    const memoizedLinkSaver = useMemo(() => <LinkSaverModal />, []);
 
     return (
         <div
@@ -81,12 +78,12 @@ export function SideBarCustom({ children }: { children: React.ReactNode }) {
                         {/* body */}
                         <div className="flex flex-col flex-1 overflow-y-auto overflow-hidden p-4 pt-0">
                             <div className="mt-8 flex flex-col gap-2">
-                                <SidebarLink categories={links} />
+                                {memoizedSidebarLink}
                             </div>
                         </div>
 
                         {/* add link modal */}
-                        {open && <LinkSaverModal setLinks={setLinks} Links={links} />}
+                        {open && memoizedLinkSaver}
                         {/* <div className="absolute bottom-0 w-full">
                         </div> */}
                     </SidebarBody>
@@ -97,7 +94,7 @@ export function SideBarCustom({ children }: { children: React.ReactNode }) {
             </Dashboard >
         </div >
     );
-}
+});
 
 // Dummy dashboard component with content
 const Dashboard = memo(({ children }: { children: React.ReactNode }) => {

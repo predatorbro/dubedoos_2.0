@@ -5,6 +5,7 @@ import { GlobalLoader } from '@/components/GlobalLoader'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { SideBarCustom } from '@/components/myComponents/SideBarCustom'
+import ChatBot from '@/components/myComponents/ChatBot'
 
 function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -41,6 +42,7 @@ function App() {
             </div>
           </motion.div>
         </SideBarCustom>
+        <ChatBot />
       </div >
 
     </>

@@ -127,6 +127,7 @@ const AddQuickee = memo(() => {
                 className="py-5"
                 text={"Add"}
                 children={addIcon}
+                id="add-quickee-button"
             />
         </div>
     )

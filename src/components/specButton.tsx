@@ -5,11 +5,13 @@ interface SpecButtonProps {
   className?: string
   text?: string
   onClick?: () => void
+  id: string
 }
 
-function SpecButton({ children, className, text = "", onClick }: SpecButtonProps) {
+function SpecButton({ children, className, text = "", onClick, id }: SpecButtonProps) {
   return (
     <Button variant={"outline"}
+      id={id}
       className={`${className} 
       bg-transparent 
       dark:text-gray-200/50 `} onClick={onClick}>

@@ -1,10 +1,11 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, memo } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { IconMenu2 } from "@tabler/icons-react";
-import { Menu, Paperclip, SidebarClose, SidebarOpen } from "lucide-react";
+import { Menu, SidebarClose, SidebarOpen } from "lucide-react";
 import Image from "next/image";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 interface SidebarContextProps {
   open: boolean;
@@ -15,11 +16,6 @@ interface LinkItem {
   label: string;
   url: string;
   favicon: string | null;
-}
-
-interface LinkCategory {
-  category: string;
-  links: LinkItem[];
 }
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(
@@ -34,7 +30,7 @@ export const useSidebar = () => {
   return context;
 };
 
-export const SidebarProvider = ({
+export const SidebarProvider = memo(({
   children,
   open: openProp,
   setOpen: setOpenProp,
@@ -55,9 +51,9 @@ export const SidebarProvider = ({
       {children}
     </SidebarContext.Provider>
   );
-};
+});
 
-export const Sidebar = ({
+export const Sidebar = memo(({
   children,
   open,
   setOpen,
@@ -73,9 +69,9 @@ export const Sidebar = ({
       {children}
     </SidebarProvider>
   );
-};
+});
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = memo((props: React.ComponentProps<typeof motion.div>) => {
   return (
     <>
       <DesktopSidebar {...props} />
@@ -83,9 +79,9 @@ export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
       <MobileSidebar {...(props as React.ComponentProps<"div">)} />
     </>
   );
-};
+});
 
-export const DesktopSidebar = ({
+export const DesktopSidebar = memo(({
   className,
   children,
   ...props
@@ -108,10 +104,10 @@ export const DesktopSidebar = ({
       </motion.div>
     </>
   );
-};
+});
 
 // tablet sidebar messed up last time
-export const TabletSidebar = ({
+export const TabletSidebar = memo(({
   className,
   children,
   ...props
@@ -145,10 +141,10 @@ export const TabletSidebar = ({
       </AnimatePresence>
     </div>
   );
-};
+});
 
 
-export const MobileSidebar = ({
+export const MobileSidebar = memo(({
   className,
   children,
   ...props
@@ -191,21 +187,13 @@ export const MobileSidebar = ({
       </div>
     </>
   );
-};
+});
 
-
-export const SidebarLink = ({
-  categories,
-  className,
-  ...props
-}: {
-  categories: LinkCategory[];
-  className?: string;
-}) => {
-  const { open, animate } = useSidebar();
-
+const SidebarLinkComponent = () => {
+  const { open } = useSidebar();
+  const categories = useSelector((state: RootState) => state.bookmark.links);
   return (
-    <div className={cn("flex flex-col gap-2", className)} {...props}>
+    <div className={"flex flex-col gap-2"}>
       {categories.map((cat, idx) => (
         <div key={idx} className="flex flex-col gap-1">
           {/* Category title */}
@@ -261,4 +249,6 @@ export const SidebarLink = ({
     </div>
   );
 };
+
+export const SidebarLink = memo(SidebarLinkComponent);
 

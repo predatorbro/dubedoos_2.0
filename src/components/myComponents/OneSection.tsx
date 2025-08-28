@@ -64,21 +64,21 @@ export default function OneSection({ sectionData }: any) {
     const [layoutDesktop, setLayoutDesktop] = useState("md:grid-cols-2");
 
     const navigationLinks = [
-        { onClick: addNewNote, label: "Add new note", icon: Plus, active: true },
-        { onClick: () => setLayoutMobile(!layoutMobile), label: "Change Layout", icon: LayoutDashboard },
-        { onClick: handleDelete, label: "Delete Section", icon: Trash2 },
+        { id: `add-note-${sectionID}`, onClick: addNewNote, label: "Add new note", icon: Plus, active: true },
+        { id: `toggle-layout-${sectionID}`, onClick: () => setLayoutMobile(!layoutMobile), label: "Change Layout", icon: LayoutDashboard },
+        { id: `delete-section-${sectionID}`, onClick: handleDelete, label: "Delete Section", icon: Trash2 },
     ]
 
     const desktopOptions = [
-        { onClick: addNewNote, icon: Plus },
-        { onClick: () => setLayoutDesktop("md:grid-cols-1"), icon: Rows3 },
-        { onClick: () => setLayoutDesktop("md:grid-cols-2"), icon: Grid2X2 },
-        { onClick: () => setLayoutDesktop("xl:grid-cols-3"), icon: Grid3X3 },
-        { onClick: handleDelete, icon: Trash2 },
+        { id: `add-note-${sectionID}`, onClick: addNewNote, icon: Plus },
+        { id: `layout-1col-${sectionID}`, onClick: () => setLayoutDesktop("md:grid-cols-1"), icon: Rows3 },
+        { id: `layout-2col-${sectionID}`, onClick: () => setLayoutDesktop("md:grid-cols-2"), icon: Grid2X2 },
+        { id: `layout-3col-${sectionID}`, onClick: () => setLayoutDesktop("xl:grid-cols-3"), icon: Grid3X3 },
+        { id: `delete-section-${sectionID}`, onClick: handleDelete, icon: Trash2 },
     ];
 
     return (
-        <div className="border rounded-md w-full p-3 mb-5 border-gray-800 dark:border-gray-200/50" onDoubleClick={addNewNote}>
+        <div className="section-node border rounded-md w-full p-3 mb-5 border-gray-800 dark:border-gray-200/50" onDoubleClick={addNewNote}>
             {ConfirmDialog}
             <div className="flex gap-2 md:gap-0 pb-3 justify-between items-center" onDoubleClick={(e) => e.stopPropagation()}>
                 {/* title */}
@@ -114,7 +114,7 @@ export default function OneSection({ sectionData }: any) {
                                 {navigationLinks.map((link, index) => {
                                     const Icon = link.icon
                                     return (
-                                        <NavigationMenuItem key={index} className="w-full" onClick={link.onClick}>
+                                        <NavigationMenuItem id={link.id} key={link.id} className="w-full" onClick={link.onClick}>
                                             <PopoverPrimitive.PopoverClose asChild>
                                                 <NavigationMenuLink className="flex flex-row items-center gap-2  hover:bg-neutral-400/60">
                                                     <Icon
@@ -141,7 +141,7 @@ export default function OneSection({ sectionData }: any) {
                         variant="outline"
                         size="icon"
                         onClick={() => setShowOptions(!showOptions)}
-                        className="w-12 h-12 flex justify-center items-center relative z-10 border-gray-800 dark:border-gray-200/50"
+                        className="open-section-navigation w-12 h-12 flex justify-center items-center relative z-10 border-gray-800 dark:border-gray-200/50"
                     >
                         <motion.div
                             animate={{ rotate: showOptions ? 90 : 0 }}
@@ -155,7 +155,7 @@ export default function OneSection({ sectionData }: any) {
                     <AnimatePresence>
                         {showOptions && (
                             <motion.div
-                                className="absolute right-14 flex gap-2 ml-2"
+                                className="section-navigation absolute right-14 flex gap-2 ml-2"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 20 }}
@@ -163,13 +163,13 @@ export default function OneSection({ sectionData }: any) {
                             >
                                 {desktopOptions.map((opt, i) => (
                                     <motion.div
-                                        key={i}
+                                        key={opt.id}
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: 20 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <Button variant="outline" className="aspect-square h-full" onClick={opt.onClick}>
+                                        <Button id={opt.id} variant="outline" className="aspect-square h-full" onClick={opt.onClick}>
                                             <opt.icon className="" />
                                         </Button>
                                     </motion.div>
@@ -182,7 +182,7 @@ export default function OneSection({ sectionData }: any) {
             </div>
 
             {/* Animated notes container with AnimatePresence */}
-            <div className={`rounded-md h-fit grid gap-3 ${layoutMobile ? "grid-cols-2 sm:grid-cols-1" : "grid-cols-1 sm:grid-cols-2"} ${layoutDesktop} `}>
+            <div className={`notes-render-area rounded-md h-fit grid gap-3 ${layoutMobile ? "grid-cols-2 sm:grid-cols-1" : "grid-cols-1 sm:grid-cols-2"} ${layoutDesktop} `}>
                 <AnimatePresence mode="popLayout">
                     {/* Pinned notes */}
                     {sectionNotes

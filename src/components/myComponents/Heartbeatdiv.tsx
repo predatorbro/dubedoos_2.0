@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 
-export default function Heartbeatdiv({ children }: { children?: React.ReactNode }) {
+export default function Heartbeatdiv({ children, delay = 10 }: { children?: React.ReactNode, delay?: number }) {
     return (
         <motion.div
             animate={{
@@ -11,7 +11,7 @@ export default function Heartbeatdiv({ children }: { children?: React.ReactNode 
             transition={{
                 duration: 1,      // total time for one beat
                 repeat: Infinity, // infinite loop
-                repeatDelay: 10,  // wait between beats (like heartbeat rhythm)
+                repeatDelay: delay,  // wait between beats (like heartbeat rhythm)
                 ease: "easeInOut",
             }}
         >

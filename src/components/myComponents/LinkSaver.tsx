@@ -20,25 +20,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { setLinks as setBookmarkLinks } from "@/store/features/bookmarkSlice";
 
-export interface LinkItem {
-    label: string;
-    url: string;
-    favicon: string | null;
-}
 
-export interface LinkCategory {
-    category: string;
-    links: LinkItem[];
-}
+const LinkSaverModal = memo(() => {
+    const Links = useSelector((state: RootState) => state.bookmark.links);
+    const dispatch = useDispatch();
 
-function LinkSaverModal({
-    setLinks,
-    Links,
-}: {
-    setLinks: React.Dispatch<React.SetStateAction<LinkCategory[]>>;
-    Links: LinkCategory[];
-}) {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "manage">("add");
 
@@ -49,13 +39,8 @@ function LinkSaverModal({
     const [category, setCategory] = useState("");
     const [newCategory, setNewCategory] = useState("");
 
-    const [categories, setCategories] = useState<string[]>([]);
-
-    useEffect(() => {
-        const prev = Links.map(link => link.category);
-        setCategories(prev)
-    }, [Links])
-
+    // Derive categories from Links using useMemo instead of local state
+    const categories = useMemo(() => Links.map(link => link.category), [Links]);
 
     const [selectedCat, setSelectedCat] = useState("");
 
@@ -81,21 +66,20 @@ function LinkSaverModal({
             finalCategory = newCategory;
         }
 
-        setLinks((prev) => {
-            const existing = prev.find((c) => c.category === finalCategory);
-            if (existing) {
-                const updated = prev.map(c => c.category === finalCategory
-                    ? { ...c, links: [...c.links, { label, url, favicon }] }
-                    : c
-                );
-                return updated;
-            } else {
-                return [
-                    ...prev,
-                    { category: finalCategory, links: [{ label, url, favicon }] },
-                ];
-            }
-        });
+        const existing = Links.find((c) => c.category === finalCategory);
+        let updated: typeof Links;
+        if (existing) {
+            updated = Links.map(c => c.category === finalCategory
+                ? { ...c, links: [...c.links, { label, url, favicon }] }
+                : c
+            );
+        } else {
+            updated = [
+                ...Links,
+                { category: finalCategory, links: [{ label, url, favicon }] },
+            ];
+        }
+        dispatch(setBookmarkLinks(updated));
 
         // Reset
         setOpen(false);
@@ -104,22 +88,38 @@ function LinkSaverModal({
         setFavicon(null);
         setCategory("");
         setNewCategory("");
-    }, [category, favicon, label, newCategory, setLinks, url]);
+    }, [Links, category, dispatch, favicon, label, newCategory, url]);
 
     const handleDeleteLink = useCallback((cat: string, linkIdx: number) => {
-        setLinks((prev) =>
-            prev.map((c) =>
-                c.category === cat
-                    ? { ...c, links: c.links.filter((_, idx) => idx !== linkIdx) }
-                    : c
-            )
+        const updated = Links.map((c) =>
+            c.category === cat
+                ? { ...c, links: c.links.filter((_, idx) => idx !== linkIdx) }
+                : c
         );
-    }, [setLinks]);
+        dispatch(setBookmarkLinks(updated));
+    }, [Links, dispatch]);
 
     const handleDeleteCategory = useCallback((cat: string) => {
-        setLinks((prev) => prev.filter((c) => c.category !== cat));
+        const updated = Links.filter((c) => c.category !== cat);
+        dispatch(setBookmarkLinks(updated));
         if (selectedCat === cat) setSelectedCat("");
-    }, [selectedCat, setLinks]);
+    }, [Links, dispatch, selectedCat]);
+
+    const handleLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setLabel(e.target.value);
+    }, []);
+
+    const handleNewCategoryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewCategory(e.target.value);
+    }, []);
+
+    const handleModeChange = useCallback((newMode: "add" | "manage") => {
+        setMode(newMode);
+    }, []);
+
+    const handleOpenChange = useCallback((newOpen: boolean) => {
+        setOpen(newOpen);
+    }, []);
 
     useEffect(() => {
         if (newCategory) {
@@ -134,7 +134,7 @@ function LinkSaverModal({
 
     return (
         <div className="flex items-center justify-center bg-muted">
-            <Dialog open={open} onOpenChange={setOpen} >
+            <Dialog open={open} onOpenChange={handleOpenChange} >
                 <DialogTrigger asChild>
                     <Button
                         variant="outline"
@@ -160,14 +160,14 @@ function LinkSaverModal({
                         <Button
                             size="sm"
                             variant={mode === "add" ? "default" : "outline"}
-                            onClick={() => setMode("add")}
+                            onClick={() => handleModeChange("add")}
                         >
                             Add
                         </Button>
                         <Button
                             size="sm"
                             variant={mode === "manage" ? "default" : "outline"}
-                            onClick={() => setMode("manage")}
+                            onClick={() => handleModeChange("manage")}
                         >
                             Manage
                         </Button>
@@ -204,7 +204,7 @@ function LinkSaverModal({
                                 <Input
                                     placeholder="Label"
                                     value={label}
-                                    onChange={(e) => setLabel(e.target.value)}
+                                    onChange={handleLabelChange}
                                 />
                                 <Input
                                     placeholder="https://example.com"
@@ -237,7 +237,7 @@ function LinkSaverModal({
                                     <Input
                                         placeholder="Add new category"
                                         value={newCategory}
-                                        onChange={(e) => setNewCategory(e.target.value)}
+                                        onChange={handleNewCategoryChange}
                                     />
 
                                 </div>
@@ -334,6 +334,6 @@ function LinkSaverModal({
             </Dialog>
         </div>
     );
-}
+});
 
-export default memo(LinkSaverModal)
+export default LinkSaverModal

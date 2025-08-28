@@ -183,6 +183,12 @@ function BigTodo({ noteData, sectionID }: any) {
         }
     }, [copyStatus])
     const handleDelete = async () => {
+        const isTitleEmpty = (title || "").trim().length === 0
+        const isContentEmpty = (content || "").trim().length === 0
+        if (isTitleEmpty && isContentEmpty) {
+            dispatch(deleteNote({ id, sectionID }));
+            return;
+        }
         const ok = await confirm()
         if (ok) {
             dispatch(deleteNote({ id, sectionID }));
@@ -911,7 +917,7 @@ function BigTodo({ noteData, sectionID }: any) {
 
     if (animate && !showCarousel) {
         return (
-            <Heartbeatdiv>
+            <Heartbeatdiv delay={10}>
                 {body}
             </Heartbeatdiv>
         )

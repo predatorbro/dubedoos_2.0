@@ -61,9 +61,21 @@ const LinkSaverModal = memo(() => {
     }, [fetchFavicon]);
 
     const handleSave = useCallback(() => {
-        let finalCategory = category;
-        if (newCategory) {
-            finalCategory = newCategory;
+        // Resolve category: prefer newCategory text, else selected category
+        let finalCategory = newCategory ? newCategory : category;
+
+        // Similarity matching: case-insensitive, space/punct-insensitive, partial containment
+        const normalize = (s: string) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "").trim();
+        const finalNorm = normalize(finalCategory);
+        const similar = Links.find((c) => {
+            const norm = normalize(c.category);
+            if (!finalNorm || !norm) return false;
+            return norm === finalNorm || norm.includes(finalNorm) || finalNorm.includes(norm);
+        });
+
+        if (similar) {
+            // Use the canonical stored category label
+            finalCategory = similar.category;
         }
 
         const existing = Links.find((c) => c.category === finalCategory);

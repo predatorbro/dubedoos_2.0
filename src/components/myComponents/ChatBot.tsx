@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 const ChatBot = memo(() => {
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
-        { role: "assistant", content: "Hi! I'm here to guide you around this app. How can I help?" }
+        { role: "assistant", content: "Hi! I'm Dubedoos, your friendly AI assistant dubedoos 2.0 - I'm here to guide you . How can I help?" }
     ]);
     const [input, setInput] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(true);
@@ -435,7 +435,7 @@ const ChatBot = memo(() => {
                                 {isLoading && (
                                     <div className="self-start max-w-[85%] px-3 py-2 rounded-lg bg-muted flex items-center gap-2">
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        <span>Thinking...</span>
+                                        <span>Responding...</span>
                                     </div>
                                 )}
                             </div>

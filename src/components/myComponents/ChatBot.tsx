@@ -8,11 +8,11 @@ import Heartbeatdiv from "./Heartbeatdiv";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
+import ReactMarkdown from 'react-markdown'
 const ChatBot = memo(() => {
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
-        { role: "assistant", content: "Hi! I'm Dubedoos, your friendly AI assistant dubedoos 2.0 - I'm here to guide you . How can I help?" }
+        { role: "assistant", content: "Hi! I'm dubedoos 2.0 , your friendly AI assistant - I'm here to guide you . How can I help?" }
     ]);
     const [input, setInput] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(true);
@@ -250,8 +250,6 @@ const ChatBot = memo(() => {
     };
 
     const performCalendarAutomation = async (payload: { date: string; calendarTodo: string }) => {
-        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
         // Parse "YYYY-MM-DD" -> { year, monthIndex, day }
         const parseDate = (dateStr: string) => {
             const [year, month, day] = dateStr.split("-").map(Number);
@@ -332,13 +330,14 @@ const ChatBot = memo(() => {
             value: payload.calendarTodo,
             writable: true,
         });
+
         todoInput.dispatchEvent(new Event("input", { bubbles: true }));
         await delay(150);
         todoInput.dispatchEvent(new Event("change", { bubbles: true }));
         await delay(150);
-
-        // Submit
         addBtn.click();
+        await delay(150);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         await delay(150);
     };
 
@@ -429,7 +428,9 @@ const ChatBot = memo(() => {
                             <div className="flex flex-col gap-3 text-sm">
                                 {messages.map((m, i) => (
                                     <div key={i} className={m.role === "user" ? "self-end max-w-[85%] px-3 py-2 rounded-lg bg-primary text-primary-foreground" : "self-start max-w-[85%] px-3 py-2 rounded-lg bg-muted"}>
-                                        {m.content}
+                                        <ReactMarkdown>
+                                            {m.content}
+                                        </ReactMarkdown>
                                     </div>
                                 ))}
                                 {isLoading && (

@@ -3,4 +3,11 @@ notes for today
 08/26
 
  
-optimize app
+optimize secitons area
+
+fix the stucking of state of calander todo
+-new quickee and note using keyboard
+- double click on left side a creatd a new todo
+- todo empty validation 
+- make a small changes in the prompt to give him current time so thta to add todo for tomorrow
+

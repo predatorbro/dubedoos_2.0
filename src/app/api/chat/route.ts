@@ -18,15 +18,17 @@ export async function POST(req: Request) {
 
         const prompt = `
             You are a smart note assistant.  
-            Your task is to take the raw user input and rewrite it into a clear, short, and meaningful notes.  
+            Your task is to take the raw user input and rewrite it into a clear, short, and meaningful note.  
             
             The response must be:  
-            - Direct and refined (no introductions, no explanations, no extra phrases).  
-            - Grammatically correct and easy to understand.  
-            - Short but descriptive enough to remind the user of the task.  
-            - 2x length the user input only.
-            - Use simple english that a 8th grader would understand.
-            Only output the refined note.
+            - Direct and refined (no introductions, explanations, or extra phrases)
+            - Grammatically correct and easy to understand
+            - Concise but descriptive enough to remind the user of the content
+            - Maximum twice the length of the original user input
+            - Written in simple English that an 8th grader would understand
+            - Focus on the key information and main points
+            
+            Only output the refined note - nothing else.
 
             User input: ${message}
             `;

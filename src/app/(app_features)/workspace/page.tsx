@@ -27,7 +27,7 @@ function App() {
             animate={!isLoading ? { y: 0, opacity: 1 } : {}}
             transition={{ duration: 0.4 }}
           >
-            <div className="p-2 xl:p-3 2xl:p-5">
+            <div className="p-2 xl:p-3">
               <NavBar />
             </div>
           </motion.div>
@@ -37,7 +37,7 @@ function App() {
             animate={!isLoading ? { y: 0, opacity: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="px-2 xl:px-3 2xl:px-5">
+            <div className="px-2 xl:px-3">
               <CompleteSection />
             </div>
           </motion.div>

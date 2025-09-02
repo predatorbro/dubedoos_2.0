@@ -1,6 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-
+import React, { memo, useEffect, useState } from 'react'
 
 function TimeDisplay({ timestamp }: { timestamp: number }) {
     const [formattedTime, setFormattedTime] = useState('')
@@ -15,4 +14,4 @@ function TimeDisplay({ timestamp }: { timestamp: number }) {
     return <span>{formattedTime}</span>
 }
 
-export default TimeDisplay
+export default memo(TimeDisplay)

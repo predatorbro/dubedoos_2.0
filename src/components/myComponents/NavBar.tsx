@@ -135,7 +135,7 @@ export default function Component() {
     { onClick: () => setManualOpen(true), label: "Help", icon: InfoIcon },
   ]
   return (
-    <header className="border rounded-md px-4 md:px-6 border-gray-800 dark:border-gray-200/50">
+    <header className="border rounded-md px-4 md:px-6">
       {ConfirmDialog}
       <InstructionsModal
         isOpen={manualOpen}

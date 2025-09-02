@@ -6,7 +6,7 @@ import { memo } from "react";
 const Sections = () => {
     const sections = useSelector((state: any) => state.notez.sections);
     return (
-        <div className="flex flex-col justify-center items-start mt-2 xl:mt-3 2xl:mt-5 ">
+        <div className="flex flex-col justify-center items-start mt-2 xl:mt-3">
             {
                 sections.map((section: any, index: number) => (
                     <OneSection key={index} sectionData={section} />

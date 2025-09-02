@@ -8,7 +8,7 @@ import { memo } from "react";
 function CompleteSection() {
   return (
     <>
-      <div className="flex flex-row  flex-wrap md:flex-nowrap gap-2 xl:gap-3 2xl:gap-5">
+      <div className="flex flex-row  flex-wrap md:flex-nowrap gap-2 xl:gap-3">
 
         {/* left side */}
         <LeftSide />

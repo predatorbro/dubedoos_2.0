@@ -85,7 +85,7 @@ function AdvancedCalendar() {
         startMonth={startDate}
         endMonth={endDate}
         onDayClick={handleDayClick}
-        className="overflow-hidden rounded-md border-gray-800 dark:border-gray-200/50 border p-2 bg-transparent w-full"
+        className="overflow-hidden rounded-md border p-2 bg-transparent w-full"
         classNames={{
           caption: "flex items-center absolute",
           caption_label: "text-base lg:text-lg xl:text-2xl font-semibold",

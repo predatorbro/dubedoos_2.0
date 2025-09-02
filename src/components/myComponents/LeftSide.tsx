@@ -4,10 +4,11 @@ import { SquarePen } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/store/store";
 import { addQuickees, Todo } from "@/store/features/quickySlice";
-import { memo, useCallback, useMemo, useState, type ChangeEvent } from "react";
+import { memo, useCallback, useMemo, useState, type ChangeEvent, useEffect } from "react";
 import type { RootState } from "@/store/store";
 import Quickee from "./Quickee";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 
 function LeftSide() {
 
@@ -63,7 +64,7 @@ function LeftSide() {
     ), [quickeesList]);
 
     return (
-        <div className="w-full md:w-[unset] md:min-w-1/2 xl:min-w-2/5 border rounded-md p-3 flex flex-col gap-3 border-gray-800 dark:border-gray-200/50 h-[unset]">
+        <div className="w-full md:w-[unset] md:min-w-1/2 xl:min-w-2/5 border rounded-md p-3 flex flex-col gap-3 h-[unset]">
             {/* add quickees */}
             <AddQuickee />
 
@@ -99,14 +100,48 @@ const AddQuickee = memo(() => {
     const dispatch = useDispatch<AppDispatch>();
     const [quickee, setQuickee] = useState<string>("");
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === 'q') {
+                e.preventDefault();
+                const input = document.getElementById('quick-input') as HTMLInputElement;
+                if (input) {
+                    if (document.activeElement === input) {
+                        input.blur();
+                    } else {
+                        input.focus();
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     const addQuickee = useCallback(() => {
-        dispatch(addQuickees(quickee))
-        quickee && setQuickee("");
+        if (quickee.trim()) {
+            dispatch(addQuickees(quickee.trim()))
+            setQuickee("");
+            toast.success("Quickee added successfully!");
+        } else {
+            toast.error("Quickee cannot be empty!");
+        }
     }, [dispatch, quickee])
 
     const handleQuickeeChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setQuickee(e.target.value);
     }, []);
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addQuickee();
+        }
+    }, [addQuickee]);
 
     const addIcon = useMemo(() => (
         <SquarePen className="-ms-1 opacity-60" size={16} aria-hidden="true" />
@@ -119,6 +154,7 @@ const AddQuickee = memo(() => {
                 className="py-5 px-3 text-ring text-base"
                 value={quickee}
                 onChange={handleQuickeeChange}
+                onKeyDown={handleKeyDown}
                 placeHolder="List your todos..."
                 disabled
             />
@@ -132,4 +168,3 @@ const AddQuickee = memo(() => {
         </div>
     )
 })
-

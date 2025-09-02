@@ -10,10 +10,11 @@ interface QuickInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => (void);
   disabled: boolean
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => (void);
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => (void);
   id: string;
 }
 
-function QuickInput({ className, placeHolder, value, onChange, disabled, onBlur, id }: QuickInputProps) {
+function QuickInput({ className, placeHolder, value, onChange, disabled, onBlur, onKeyDown, id }: QuickInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleClearInput = () => {
@@ -45,6 +46,7 @@ function QuickInput({ className, placeHolder, value, onChange, disabled, onBlur,
           spellCheck={false}
           autoCorrect={"off"}
           autoComplete={"off"}
+          onKeyDown={onKeyDown}
         />
         {showX && (value && (disabled == true &&
           <button

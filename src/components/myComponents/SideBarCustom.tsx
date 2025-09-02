@@ -20,6 +20,24 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
         setOpen(prev => !prev);
     }, []);
 
+    // Keyboard shortcut handler for Ctrl+B
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.ctrlKey && event.key === 'b') {
+                event.preventDefault(); // Prevent browser's default bookmark action
+                toggleOpen();
+            }
+        };
+
+        // Add event listener
+        document.addEventListener('keydown', handleKeyDown);
+
+        // Cleanup event listener on component unmount
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [toggleOpen]);
+
     const sidebarBodyClass = useMemo(() => (
         ` h-full  border-r bg-neutral-300 transition-all duration-500 ease-in-out  ${open ? "md:absolute md:w-1/2 z-50 lg:relative lg:w-auto" : ""}`
     ), [open]);
@@ -56,7 +74,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
     return (
         <div
             className={cn(
-                " mx-auto flex w-full flex-1 flex-col border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800",
+                " mx-auto flex w-full flex-1 flex-col border bg-gray-100 md:flex-row dark:bg-neutral-800",
                 "h-screen w-screen",
             )}
         >
@@ -99,7 +117,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
 // Dummy dashboard component with content
 const Dashboard = memo(({ children }: { children: React.ReactNode }) => {
     return (
-        <div id="dashboard" className="flex-1 overflow-y-auto border-l border-neutral-200 dark:border-neutral-700 bg-neutral-200 dark:bg-neutral-900">
+        <div id="dashboard" className="flex-1 overflow-y-auto border-l bg-neutral-200 dark:bg-neutral-900">
             {children}
         </div>
     );

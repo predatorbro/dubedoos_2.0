@@ -369,7 +369,7 @@ function BigTodo({ noteData, sectionID }: any) {
         }
     }, [calanderOpen])
 
-    const [borderColor, setBorderColor] = useState("border-gray-800 dark:border-gray-200/50")
+    const [borderColor, setBorderColor] = useState("border")
 
     function checkDeadline(deadLine: string | number | undefined): void {
         // Handle undefined deadline
@@ -397,7 +397,7 @@ function BigTodo({ noteData, sectionID }: any) {
             toast.error("Deadline has passed for " + title);
             setBorderColor('border-blue-500')
         } else {
-            setBorderColor('border-gray-800 dark:border-gray-200/50')
+            setBorderColor('border')
         }
     }
 
@@ -405,7 +405,7 @@ function BigTodo({ noteData, sectionID }: any) {
         if (deadLine) {
             checkDeadline(deadLine)
         } else {
-            setBorderColor('border-gray-800 dark:border-gray-200/50')
+            setBorderColor('border')
         }
     }, [deadLine])
     // words and chars counter

@@ -36,7 +36,8 @@ import {
   Trash2,
   NotebookPen,
   Info,
-  InfoIcon
+  InfoIcon,
+  Calendar
 } from "lucide-react"
 
 import Toggler from "../UniversalToggler"
@@ -51,6 +52,7 @@ import { useTheme } from "next-themes"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { InstructionsModal } from "@/components/myComponents/InstructionsModal"
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 // Language options
 const themeList = [
   { value: "light", label: "Summer" },
@@ -127,11 +129,23 @@ export default function Component() {
       setTheme(value)
     }
   }
+  const pathname = usePathname();
+  const isStreakCalendarPage = pathname === '/streak-calendar';
+
+  const handleStreakCalendar = () => {
+    window.location.href = '/streak-calendar';
+  };
+
+  const handleBackToWorkspace = () => {
+    window.location.href = '/workspace';
+  };
+
   // Navigation links with icons for desktop icon-only navigation
   const navigationLinks = [
     { onClick: handleCreateNewSection, label: "Section", icon: CirclePlus, active: true },
     { onClick: handleClearTodo, label: "Quickees", icon: RotateCcw },
     { onClick: handleClearSection, label: "Sections", icon: Trash2 },
+    { onClick: handleStreakCalendar, label: "Streaks", icon: Calendar },
     { onClick: () => setManualOpen(true), label: "Help", icon: InfoIcon },
   ]
   return (
@@ -144,6 +158,7 @@ export default function Component() {
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex flex-1 items-center gap-3">
+
           {/* Mobile menu trigger */}
           <Button
             className="group size-8 md:hidden pointer-events-none"
@@ -167,153 +182,207 @@ export default function Component() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-
+          {/* Back button for streak calendar */}
+          {isStreakCalendarPage && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleBackToWorkspace}
+                  className="flex items-center gap-2 hover:bg-accent"
+                  variant="ghost"
+                  size="sm"
+                >
+                  <ChevronDown size={16} className="rotate-90" />
+                  <span className="hidden sm:inline">Back to Workspace</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="px-2 py-1 text-xs">
+                <p>Return to main workspace</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           {/* right navigation */}
-          <NavigationMenu className="hidden sm:flex" >
-            <NavigationMenuList className="gap-2" >
-              <TooltipProvider >
-                <NavigationMenuItem key={"toggle items"} className="flex gap-3" >
-                  {/* toggler for create section */}
-                  <Tooltip open={createNewSection ? true : undefined} >
-                    <TooltipTrigger asChild disabled={createNewSection}>
-                      <NavigationMenuLink
-                        className={`flex size-8 items-center justify-center p-1.5 ${createNewSection ? 'pointer-events-none' : ''}`}
-                        onClick={!createNewSection ? handleCreateNewSection : undefined}
+          {!isStreakCalendarPage && (
+            <NavigationMenu className="hidden sm:flex" >
+              <NavigationMenuList className="gap-2" >
+                <TooltipProvider >
+                  <NavigationMenuItem key={"toggle items"} className="flex gap-3" >
+                    {/* toggler for create section */}
+                    <Tooltip open={createNewSection ? true : undefined} >
+                      <TooltipTrigger asChild disabled={createNewSection}>
+                        <NavigationMenuLink
+                          className={`flex size-8 items-center justify-center p-1.5 ${createNewSection ? 'pointer-events-none' : ''}`}
+                          onClick={!createNewSection ? handleCreateNewSection : undefined}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <Loader2
+                                size={16}
+                                className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <CirclePlus
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={createNewSection}
+                            setState={setCreateNewSection}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
                       >
-                        <Toggler
-                          primaryIcon={
-                            <Loader2
-                              size={16}
-                              className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
-                              aria-hidden="true"
-                            />
-                          }
-                          secondaryIcon={
-                            <CirclePlus
-                              size={16}
-                              className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                              aria-hidden="true"
-                            />
-                          }
-                          state={createNewSection}
-                          setState={setCreateNewSection}
-                        />
-                      </NavigationMenuLink>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="px-2 py-1 text-xs"
-                    >
-                      <p>{!createNewSection ? "Create New Section" : "Creating"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  {/* toggler for clear todos */}
-                  <Tooltip open={clearTodo ? true : undefined}>
-                    <TooltipTrigger asChild>
-                      <NavigationMenuLink
-                        className="flex size-8 items-center justify-center p-1.5"
-                        onClick={handleClearTodo}
+                        <p>{!createNewSection ? "Create New Section" : "Creating"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* toggler for clear todos */}
+                    <Tooltip open={clearTodo ? true : undefined}>
+                      <TooltipTrigger asChild>
+                        <NavigationMenuLink
+                          className="flex size-8 items-center justify-center p-1.5"
+                          onClick={handleClearTodo}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <Loader2
+                                size={16}
+                                className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <NotebookPen
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={clearTodo}
+                            setState={setClearTodo}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
                       >
-                        <Toggler
-                          primaryIcon={
-                            <Loader2
-                              size={16}
-                              className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
-                              aria-hidden="true"
-                            />
-                          }
-                          secondaryIcon={
-                            <NotebookPen
-                              size={16}
-                              className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                              aria-hidden="true"
-                            />
-                          }
-                          state={clearTodo}
-                          setState={setClearTodo}
-                        />
-                      </NavigationMenuLink>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="px-2 py-1 text-xs"
-                    >
-                      <p>{!createNewSection ? "Reset Quickees" : "Resetting"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  {/* toggler for clear sections */}
-                  <Tooltip open={clearSection ? true : undefined}>
-                    <TooltipTrigger asChild>
-                      <NavigationMenuLink
-                        className="flex size-8 items-center justify-center p-1.5"
-                        onClick={handleClearSection}
+                        <p>{!createNewSection ? "Reset Quickees" : "Resetting"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* toggler for clear sections */}
+                    <Tooltip open={clearSection ? true : undefined}>
+                      <TooltipTrigger asChild>
+                        <NavigationMenuLink
+                          className="flex size-8 items-center justify-center p-1.5"
+                          onClick={handleClearSection}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <Loader2
+                                size={16}
+                                className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <RotateCcw
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={clearSection}
+                            setState={setClearSection}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
                       >
-                        <Toggler
-                          primaryIcon={
-                            <Loader2
-                              size={16}
-                              className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
-                              aria-hidden="true"
-                            />
-                          }
-                          secondaryIcon={
-                            <RotateCcw
-                              size={16}
-                              className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                              aria-hidden="true"
-                            />
-                          }
-                          state={clearSection}
-                          setState={setClearSection}
-                        />
-                      </NavigationMenuLink>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="px-2 py-1 text-xs"
-                    >
-                      <p>{!createNewSection ? "Reset Sections" : "Resetting"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  {/* toggler for manual */}
-                  <Tooltip >
-                    <TooltipTrigger asChild>
-                      <NavigationMenuLink
-                        className="flex size-8 items-center justify-center p-1.5"
-                        onClick={() => setManualOpen(true)}
+                        <p>{!createNewSection ? "Reset Sections" : "Resetting"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* toggler for streak calendar */}
+                    <Tooltip >
+                      <TooltipTrigger asChild>
+                        <NavigationMenuLink
+                          className="flex size-8 items-center justify-center p-1.5"
+                          onClick={handleStreakCalendar}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <Calendar
+                                size={16}
+                                className="absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0 text-blue-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <Calendar
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100 text-blue-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={false}
+                            setState={() => { }}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
                       >
-                        <Toggler
-                          primaryIcon={
-                            <InfoIcon
-                              size={16}
-                              className="absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  "
-                              aria-hidden="true"
-                            />
-                          }
-                          secondaryIcon={
-                            <InfoIcon
-                              size={16}
-                              className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                              aria-hidden="true"
-                            />
-                          }
-                          state={manualOpen}
-                          setState={setManualOpen}
-                        />
-                      </NavigationMenuLink>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="px-2 py-1 text-xs"
-                    >
-                      <p>Open Manual</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  {/* tooltips end */}
-                </NavigationMenuItem>
-              </TooltipProvider>
-            </NavigationMenuList>
-          </NavigationMenu>
+                        <p>Streak Calendar</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* toggler for manual */}
+                    <Tooltip >
+                      <TooltipTrigger asChild>
+                        <NavigationMenuLink
+                          className="flex size-8 items-center justify-center p-1.5"
+                          onClick={() => setManualOpen(true)}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <InfoIcon
+                                size={16}
+                                className="absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  "
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <InfoIcon
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={manualOpen}
+                            setState={setManualOpen}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
+                      >
+                        <p>Open Manual</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* tooltips end */}
+                  </NavigationMenuItem>
+                </TooltipProvider>
+              </NavigationMenuList>
+            </NavigationMenu>
+          )}
 
           {/* mobile navigation */}
           <Popover>
@@ -327,7 +396,7 @@ export default function Component() {
                 <ChevronDown size={16} aria-hidden="true" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-36 p-1 sm:hidden bg-muted">
+            <PopoverContent align="start" className="w-36 p-1 sm:hidden">
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
                   {navigationLinks.map((link, index) => {
@@ -335,7 +404,7 @@ export default function Component() {
                     return (
                       <NavigationMenuItem key={index} className="w-full" onClick={link.onClick}>
                         <PopoverPrimitive.PopoverClose asChild>
-                          <NavigationMenuLink className="flex flex-row items-center gap-2 hover:bg-neutral-400/60">
+                          <NavigationMenuLink className="flex flex-row items-center gap-2 hover:bg-accent">
                             <Icon
                               size={16}
                               className="text-muted-foreground"
@@ -366,10 +435,10 @@ export default function Component() {
                 <SelectValue />
               </span>
             </SelectTriggerCustom>
-            <SelectContent className="bg-muted [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
+            <SelectContent>
               {themeList.map((theme) => (
-                <SelectItem key={theme.value} value={theme.value} className="data-[highlighted]:bg-neutral-400/60 w-full h-full overflow-hidden">
-                  <span className="flex items-center gap-2 ">
+                <SelectItem key={theme.value} value={theme.value}>
+                  <span className="flex items-center gap-2">
                     <span className="truncate text-muted-foreground">{theme.label}</span>
                   </span>
                 </SelectItem>

@@ -84,16 +84,26 @@ export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
                 </>
               ) : (
                 <>
-                  <h2 className="text-xl font-semibold mb-4 text-foreground absolute inset-0 bg-white dark:bg-neutral-900 h-fit p-6 pb-1 rounded-tr-2xl rounded-tl-2xl">
+                  <h2 className="text-xl border-b font-semibold mb-4 text-foreground absolute inset-0 bg-white dark:bg-neutral-900 h-fit p-6 pb-2 rounded-tr-2xl rounded-tl-2xl">
                     Dev Info
                   </h2>
-                  <p className="text-muted-foreground text-base mt-8 mb-4">
+                  <p className="text-muted-foreground text-base mt-10 mb-4">
                     <strong>du-be-doos 2.0,</strong> is a simple yet powerful
                     note-taking project designed to boost productivity. It helps
                     users stay organized, enhance notes effortlessly, and clear
                     the clutter of the mind. With smart features like Quickees,
                     Magic AI Buttons, a minimalist UI, and a Deadline Tracker,
                     du-be-doos makes remembering tasks seamless.
+                  </p>
+                  <p className="text-sm font-semibold mb-4 text-foreground ">
+                    know about developer ‎ ‎ - ‎ ‎  <a
+                      href="https://prasadbhai.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-light pb-1 text-muted-foreground hover:text-primary transition-colors hover:underline"
+                    >
+                      Visit here!!
+                    </a>
                   </p>
                   <div className="space-y-4">
                     {Object.entries(techStack).map(([category, items]) => (

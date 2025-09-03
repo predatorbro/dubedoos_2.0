@@ -74,11 +74,11 @@ function Quickee({ id, todo, status }: props) {
     const editSaveIcon = useMemo(() => (
         editing
             ? <Save className="-ms-1 opacity-60" size={16} aria-hidden="true" color="#10B981" />
-            : <Pencil className="-ms-1 opacity-60" size={16} aria-hidden="true" color="#3B82F6" />
+            : <Pencil className="-ms-1 opacity-60" size={16} aria-hidden="true" />
     ), [editing]);
 
     const trashIcon = useMemo(() => (
-        <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" color="#EF4444" />
+        <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
     ), []);
 
     const displayQuickee = useMemo(() => (
@@ -93,7 +93,7 @@ function Quickee({ id, todo, status }: props) {
     ), [handleCheckedChange, handleDoubleClick, id, magicTodoLoading, quickee, status]);
 
     return (
-        <div className="flex text-red-500">
+        <div className="flex">
             {
                 !editing && displayQuickee
             }
@@ -102,10 +102,10 @@ function Quickee({ id, todo, status }: props) {
                 <QuickInput id={id} className="shadow-none py-0 text-ring text-sm outline-none border-none pl-10" value={quickee} onChange={handleInputChange} placeHolder="List your todos..." disabled />
             }
 
-            <SpecButton id={id} className="border-blue-500 scale-75 cursor-pointer" children={editSaveIcon} onClick={editHandler} />
+            <SpecButton id={id} className="scale-75 cursor-pointer border-none" children={editSaveIcon} onClick={editHandler} />
 
             <SpecButton id={id} onClick={useCallback(() => { dispatch(deleteQuickees(id)) }, [dispatch, id])}
-                className="border-red-500 scale-75 cursor-pointer"
+                className="scale-75 cursor-pointer border-none"
                 children={trashIcon}
             />
 

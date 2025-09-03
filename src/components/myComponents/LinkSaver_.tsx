@@ -133,7 +133,7 @@ const LinkSaverModal = memo(({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="w-20 h-20 object-contain rounded-full border flex items-center justify-center bg-border relative overflow-hidden"
+                className="w-20 h-20 object-contain rounded-full border border-border flex items-center justify-center bg-muted relative overflow-hidden"
             >
                 {favicon ? (
                     <Image
@@ -143,7 +143,7 @@ const LinkSaverModal = memo(({
                         className="object-contain rounded-full"
                     />
                 ) : (
-                    <span className="text-2xl font-bold">
+                    <span className="text-2xl font-bold text-muted-foreground">
                         {label?.charAt(0).toUpperCase()}
                     </span>
                 )}
@@ -156,17 +156,17 @@ const LinkSaverModal = memo(({
     ), [Links, selectedCat]);
 
     return (
-        <div className="flex items-center justify-center bg-muted">
+        <div className="flex items-center justify-center">
             <Dialog open={open} onOpenChange={setOpen} >
                 <DialogTrigger asChild>
                     <Button
                         variant="outline"
-                        className="w-full h-full outline-none border-0 hover:bg-neutral-400/60 dark:hover:bg-neutral-700/80 rounded-none border-t m-0"
+                        className="w-full h-full outline-none border-0 hover:bg-accent rounded-none border-t m-0 transition-colors"
                     >
                         + Add / Manage Links
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md rounded-2xl shadow-xl bg-muted scale-90 sm:scale-100">
+                <DialogContent className="sm:max-w-md rounded-2xl shadow-xl bg-card border border-border scale-90 sm:scale-100">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-semibold text-center">
                             {mode === "add" ? "Add Link" : "Manage Links"}
@@ -219,18 +219,12 @@ const LinkSaverModal = memo(({
                                 <div className="grid grid-cols-2 gap-2 items-center">
 
                                     <Select value={category} onValueChange={setCategory} defaultValue="" disabled={newCategory.length > 0}>
-                                        <SelectTrigger className="flex-1 border rounded-md p-2 bg-accent" disabled={categories.length === 0}>
-
+                                        <SelectTrigger className="flex-1" disabled={categories.length === 0}>
                                             <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select Category"} />
-
                                         </SelectTrigger>
-                                        <SelectContent className="bg-muted">
+                                        <SelectContent>
                                             {categories.map((cat, idx) => (
-                                                <SelectItem
-                                                    key={idx}
-                                                    value={cat}
-                                                    className="data-[highlighted]:bg-border"
-                                                >
+                                                <SelectItem key={idx} value={cat}>
                                                     {cat}
                                                 </SelectItem>
                                             ))}
@@ -263,16 +257,12 @@ const LinkSaverModal = memo(({
                         <div className="grid gap-4">
                             {/* Category Selector */}
                             <Select value={selectedCat} onValueChange={setSelectedCat}>
-                                <SelectTrigger className="border rounded-md p-2 bg-accent" disabled={categories.length === 0}>
+                                <SelectTrigger disabled={categories.length === 0}>
                                     <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select Category"} />
                                 </SelectTrigger>
-                                <SelectContent className="bg-muted">
+                                <SelectContent>
                                     {categories.map((cat, idx) => (
-                                        <SelectItem
-                                            key={idx}
-                                            value={cat}
-                                            className="data-[highlighted]:bg-border"
-                                        >
+                                        <SelectItem key={idx} value={cat}>
                                             {cat}
                                         </SelectItem>
                                     ))}
@@ -285,7 +275,7 @@ const LinkSaverModal = memo(({
                                     {selectedLinks.map((link, idx) => (
                                         <div
                                             key={idx}
-                                            className="flex items-center justify-between bg-border rounded-md px-3 py-2"
+                                            className="flex items-center justify-between bg-muted rounded-md px-3 py-2 border border-border/50"
                                         >
                                             <div className="flex items-center gap-2">
                                                 {link.favicon ? (
@@ -297,11 +287,11 @@ const LinkSaverModal = memo(({
                                                         className="rounded-sm"
                                                     />
                                                 ) : (
-                                                    <span className="text-xs font-medium bg-border w-6 h-6 rounded-full flex items-center justify-center">
+                                                    <span className="text-xs font-medium bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center">
                                                         {link.label.charAt(0).toUpperCase()}
                                                     </span>
                                                 )}
-                                                <span className="text-sm">{link.label}</span>
+                                                <span className="text-sm text-foreground">{link.label}</span>
                                             </div>
                                             <Button
                                                 size="sm"

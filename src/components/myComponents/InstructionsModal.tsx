@@ -96,7 +96,7 @@ export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
                     du-be-doos makes remembering tasks seamless.
                   </p>
                   <p className="text-sm font-semibold mb-4 text-foreground ">
-                    know about developer ‎ ‎ - ‎ ‎  <a
+                    Know about developer ‎ ‎ - ‎ ‎  <a
                       href="https://prasadbhai.com"
                       target="_blank"
                       rel="noopener noreferrer"

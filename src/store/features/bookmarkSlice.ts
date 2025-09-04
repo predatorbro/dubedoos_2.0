@@ -49,13 +49,21 @@ const bookmarkSlice = createSlice({
                 // ignore persistence errors
             }
         },
+        clearAllLinks(state) {
+            state.links = [];
+            try {
+                if (typeof window !== "undefined") {
+                    window.localStorage.setItem(LS_KEY, JSON.stringify(state.links));
+                }
+            } catch {
+                // ignore persistence errors
+            }
+        },
     },
 });
 
-export const { setLinks } = bookmarkSlice.actions;
+export const { setLinks, clearAllLinks } = bookmarkSlice.actions;
 export default bookmarkSlice.reducer;
 
 // Selector
 export const selectBookmarkLinks = (state: RootState) => state.bookmark.links;
-
-

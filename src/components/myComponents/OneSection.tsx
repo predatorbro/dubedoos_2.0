@@ -1,3 +1,4 @@
+'use client'
 import { memo, useState, useCallback, useMemo } from "react";
 import QuickInput from "../QuickInput";
 import { ChevronDown, Grid2X2, Grid3X3, LayoutDashboard, Plus, Rows3, Trash2 } from "lucide-react";
@@ -120,7 +121,7 @@ const PopoverMobile = memo(({ navigationLinks }: { navigationLinks: Array<any> }
                 />
             </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-fit p-1 mr-6 md:hidden bg-muted">
+        <PopoverContent align="start" className="w-fit p-1 mr-6 md:hidden bg-card border">
             <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
                     {navigationLinks.map((link) => {
@@ -133,7 +134,7 @@ const PopoverMobile = memo(({ navigationLinks }: { navigationLinks: Array<any> }
                                 onClick={link.onClick}
                             >
                                 <PopoverPrimitive.PopoverClose asChild>
-                                    <NavigationMenuLink className="flex flex-row items-center gap-2 hover:bg-neutral-400/60">
+                                    <NavigationMenuLink className="flex flex-row items-center gap-2 hover:bg-accent hover:text-accent-foreground transition-colors">
                                         <Icon
                                             size={16}
                                             className="text-muted-foreground"
@@ -153,10 +154,12 @@ const PopoverMobile = memo(({ navigationLinks }: { navigationLinks: Array<any> }
 
 const SectionNotesRenderArea = memo(({
     sectionNotes,
-    sectionID
+    sectionID,
+    cols
 }: {
     sectionNotes: Note[];
     sectionID: string;
+    cols: number;
 }) => {
     const pinnedNotes = useMemo(() =>
         sectionNotes.filter(note => note.pinned),
@@ -184,7 +187,7 @@ const SectionNotesRenderArea = memo(({
                         }}
                         layout
                     >
-                        <BigTodo noteData={note} sectionID={sectionID} />
+                        <BigTodo noteData={note} sectionID={sectionID} cols={cols} />
                     </motion.div>
                 ))}
             </AnimatePresence>
@@ -203,7 +206,7 @@ const SectionNotesRenderArea = memo(({
                         }}
                         layout
                     >
-                        <BigTodo noteData={note} sectionID={sectionID} />
+                        <BigTodo noteData={note} sectionID={sectionID} cols={cols} />
                     </motion.div>
                 ))}
             </AnimatePresence>
@@ -289,7 +292,7 @@ function OneSection({ sectionData }: { sectionData: any }) {
         setLayoutDesktop(DESKTOP_LAYOUT_OPTIONS.THREE_COL);
     }, []);
 
-    // Memoized navigation links
+    // Memoized navigation links - hide layout button for screens smaller than sm
     const navigationLinks = useMemo(() => [
         {
             id: `add-note-${sectionID}`,
@@ -298,12 +301,13 @@ function OneSection({ sectionData }: { sectionData: any }) {
             icon: Plus,
             active: true
         },
-        {
+        // Hide layout button for screens smaller than sm (640px)
+        ...(window.innerWidth >= 640 ? [{
             id: `toggle-layout-${sectionID}`,
             onClick: toggleLayoutMobile,
             label: "Change Layout",
             icon: LayoutDashboard
-        },
+        }] : []),
         {
             id: `delete-section-${sectionID}`,
             onClick: handleDelete,
@@ -316,9 +320,27 @@ function OneSection({ sectionData }: { sectionData: any }) {
         { id: `add-note-${sectionID}`, onClick: addNewNote, icon: Plus },
         { id: `layout-1col-${sectionID}`, onClick: setLayoutOneCol, icon: Rows3 },
         { id: `layout-2col-${sectionID}`, onClick: setLayoutTwoCol, icon: Grid2X2 },
-        { id: `layout-3col-${sectionID}`, onClick: setLayoutThreeCol, icon: Grid3X3 },
+        // Hide 3-column button for screens over xl (1280px+)
+        ...(window.innerWidth >= 1280 ? [{ id: `layout-3col-${sectionID}`, onClick: setLayoutThreeCol, icon: Grid3X3 }] : []),
         { id: `delete-section-${sectionID}`, onClick: handleDelete, icon: Trash2 },
     ], [sectionID, addNewNote, setLayoutOneCol, setLayoutTwoCol, setLayoutThreeCol, handleDelete]);
+
+    // Calculate column count for textarea heights
+    const getColumnCount = useMemo(() => {
+        if (layoutMobile) {
+            return 2; // Mobile layout has 2 columns
+        }
+        if (layoutDesktop === DESKTOP_LAYOUT_OPTIONS.ONE_COL) {
+            return 1;
+        }
+        if (layoutDesktop === DESKTOP_LAYOUT_OPTIONS.TWO_COL) {
+            return 2;
+        }
+        if (layoutDesktop === DESKTOP_LAYOUT_OPTIONS.THREE_COL) {
+            return 3;
+        }
+        return 1; // Default
+    }, [layoutMobile, layoutDesktop]);
 
     const gridClassName = useMemo(() =>
         `notes-render-area rounded-md h-fit grid gap-3 ${layoutMobile ? "grid-cols-2 sm:grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
@@ -348,6 +370,7 @@ function OneSection({ sectionData }: { sectionData: any }) {
                 <SectionNotesRenderArea
                     sectionNotes={sectionNotes}
                     sectionID={sectionID}
+                    cols={getColumnCount}
                 />
             </div>
         </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { memo, useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import {
   format,
 } from "date-fns"
@@ -16,21 +17,37 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { json } from "stream/consumers"
+import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "sonner"
+import {
+  addCalendarTodo,
+  deleteCalendarTodo,
+  toggleCalendarTodoStatus,
+  selectTodosForDate,
+  CalendarTodo,
+  CalendarTodosState
+} from "@/store/features/calendarTodosSlice"
 
 function AdvancedCalendar() {
+  const dispatch = useDispatch()
   const today = new Date()
   const [month, setMonth] = useState(today)
   const [date, setDate] = useState<Date | undefined>(today)
   const [open, setOpen] = useState(false)
   const [newTodo, setNewTodo] = useState("")
-  const [todos, setTodos] = useState<Record<string, string[]>>({})
+  const [calendarId] = useState("advanced-calendar") // Default calendar ID for this component
 
   const startDate = new Date(2024, 12)
   const endDate = new Date(2026, 12)
-  useEffect(() => {
-    console.log("todos changed", newTodo)
-  }, [newTodo])
+
+  // Get todos for the currently selected date
+  const currentDateTodos = useSelector((state: { calendarTodos: CalendarTodosState }) =>
+    date ? selectTodosForDate(state, format(date, "yyyy-MM-dd")) : []
+  ).filter((todo: CalendarTodo) => todo.calendarId === calendarId)
+
+  // Get all todos for calendar highlighting
+  const allTodos = useSelector((state: { calendarTodos: CalendarTodosState }) => state.calendarTodos.calendarTodos)
+    .filter((todo: CalendarTodo) => todo.calendarId === calendarId)
 
   // types for custom components
   type CaptionLabelProps = React.HTMLAttributes<HTMLSpanElement>
@@ -42,31 +59,23 @@ function AdvancedCalendar() {
 
   const handleAddTodo = () => {
     if (!date || !newTodo.trim()) return
-    const key = format(date, "yyyy-MM-dd")
-    setTodos((prev) => ({
-      ...prev,
-      [key]: [...(prev[key] || []), newTodo.trim()],
+    dispatch(addCalendarTodo({
+      todo: newTodo.trim(),
+      date: format(date, "yyyy-MM-dd"),
+      calendarId
     }))
     setNewTodo("")
+    toast.success("Todo added successfully!")
   }
 
-  const handleDeleteTodo = (key: string, idx: number) => {
-    setTodos((prev) => ({
-      ...prev,
-      [key]: prev[key].filter((_, i) => i !== idx),
-    }))
+  const handleDeleteTodo = (todoId: string) => {
+    dispatch(deleteCalendarTodo(todoId))
+    toast.success("Todo deleted successfully!")
   }
 
-  useEffect(() => {
-    const storedTodos = localStorage.getItem("todosForCalendar")
-    if (storedTodos) {
-      setTodos(JSON.parse(storedTodos))
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem("todosForCalendar", JSON.stringify(todos))
-  }, [todos])
+  const handleToggleTodo = (todoId: string) => {
+    dispatch(toggleCalendarTodoStatus(todoId))
+  }
 
   const handleMagic = () => {
     // future implementation if needed
@@ -110,13 +119,13 @@ function AdvancedCalendar() {
 
         modifiers={{
           hasTodos: (day) => {
-            const key = format(day, "yyyy-MM-dd")
-            return todos[key]?.length > 0
+            const dateKey = format(day, "yyyy-MM-dd")
+            return allTodos.some((todo: CalendarTodo) => todo.date === dateKey)
           },
         }}
 
         modifiersClassNames={{
-          hasTodos: "bg-primary text-muted font-medium",
+          hasTodos: "bg-primary text-primary-foreground font-medium border-2 border-primary/50",
         }}
 
         components={{
@@ -140,60 +149,90 @@ function AdvancedCalendar() {
 
           ),
 
+
         }}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="sm:max-w-md bg-card border shadow-lg">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="text-lg font-semibold text-center text-primary">
               {date ? format(date, "MMMM dd, yyyy") : "No Date"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3">
-            <div className="flex gap-2">
+          <div className="space-y-4">
+            {/* Add Todo Input */}
+            <div className="flex gap-3 p-2 bg-muted/30 rounded-lg">
               <Input
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
-                placeholder="Add todo..."
+                placeholder="Add a new todo..."
+                className="flex-1 border-0 bg-transparent focus:ring-1 focus:ring-primary/20"
+                onKeyDown={(e) => e.key === 'Enter' && handleAddTodo()}
               />
-              <Button onClick={handleAddTodo} size="icon"
-                className="aspect-square "
+              <Button
+                onClick={handleAddTodo}
+                size="icon"
+                className="bg-primary hover:bg-primary/90 shadow-sm"
+                disabled={!newTodo.trim()}
               >
                 <Plus size={16} />
               </Button>
             </div>
 
-            <div className="space-y-2">
-              {date && todos[format(date, "yyyy-MM-dd")]?.map((todo, idx) => (
+            {/* Todos List */}
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {currentDateTodos.map((todo) => (
                 <div
-                  key={idx}
-                  className="flex justify-between items-center rounded-md border p-2 text-sm"
+                  key={todo.id}
+                  className="flex justify-between items-center p-3 border rounded-lg hover:bg-accent/50 hover:shadow-sm transition-all duration-200 group"
                   onDoubleClick={handleMagic}
                 >
-                  {todo}
+                  <div className="flex items-center gap-3 flex-1">
+                    <Checkbox
+                      checked={todo.status}
+                      onCheckedChange={() => handleToggleTodo(todo.id)}
+                      className="mt-0.5"
+                    />
+                    <span
+                      className={`text-sm flex-1 ${todo.status ? 'line-through text-muted-foreground' : ''}`}
+                    >
+                      {todo.todo}
+                    </span>
+                  </div>
                   <Button
-                    onClick={() =>
-                      handleDeleteTodo(format(date, "yyyy-MM-dd"), idx)
-                    }
+                    onClick={() => handleDeleteTodo(todo.id)}
                     size="icon"
                     variant="ghost"
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
                   >
                     <X size={14} />
                   </Button>
                 </div>
               ))}
-              {date && (!todos[format(date, "yyyy-MM-dd")]?.length) && (
-                <p className="text-muted-foreground text-sm">
-                  No todos yet. Add one above.
-                </p>
+
+              {currentDateTodos.length === 0 && (
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Plus size={20} className="text-primary/60" />
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    No todos yet. Add one above.
+                  </p>
+                </div>
               )}
             </div>
           </div>
 
-          <DialogFooter>
-            <Button onClick={() => setOpen(false)}>Close</Button>
+          <DialogFooter className="pt-4">
+            <Button
+              onClick={() => setOpen(false)}
+              variant="outline"
+              className="w-full hover:bg-accent"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

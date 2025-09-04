@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip"
 
 import Toggler from '../UniversalToggler'
-import { CalendarIcon, Copy, CopyCheck, Eye, EyeOffIcon, Loader2, Paperclip, Pencil, Pin, PinOff, Save, Sparkle, Sparkles, Trash, WandSparkles, X } from 'lucide-react'
+import { CalendarIcon, Copy, CopyCheck, Eye, EyeOffIcon, Loader2, Paperclip, Pencil, Pin, PinOff, Save, Sparkle, Sparkles, Trash, WandSparkles, X, Maximize2, Minimize2, SquarePen } from 'lucide-react'
 import useConfirmDialog from '../AlertComponent'
 
 import { useSession } from "next-auth/react"
@@ -29,7 +29,13 @@ import ImageUploader from '../ImageUploader'
 import { Button } from '../ui/button'
 import { motion, AnimatePresence } from "framer-motion"
 import { Calendar } from "@/components/ui/calendar"
-
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog"
 
 import TimeDisplay from './TimeDisplay'
 
@@ -43,8 +49,8 @@ import { useRouter } from 'next/navigation'
 import { CloudinaryImage } from '@/lib/cloudinary'
 
 
-function BigTodo({ noteData, sectionID }: any) {
-
+function BigTodo({ noteData, sectionID, cols = 1 }: any) {
+    // console.log("cols", cols)
     const { id, noteTitle, note, date, pinned, visibility, deadLine, images } = noteData as Note
 
     const { data: session, status } = useSession()
@@ -56,8 +62,6 @@ function BigTodo({ noteData, sectionID }: any) {
     const dispatch = useDispatch<AppDispatch>()
 
     const { confirm, ConfirmDialog } = useConfirmDialog({ text: "Do you really want to delete this item?" })
-
-    // Example handlers
 
     const [title, setTitle] = useState(noteTitle)
 
@@ -88,6 +92,9 @@ function BigTodo({ noteData, sectionID }: any) {
     const [passwordCorrect, setPasswordCorrect] = useState<boolean>(false)
     const [showPasswordDialog, setshowPasswordDialog] = useState(false)
 
+    // full screen modal state
+    const [showFullScreen, setShowFullScreen] = useState(false)
+
 
     const today = new Date()
     useEffect(() => {
@@ -99,7 +106,6 @@ function BigTodo({ noteData, sectionID }: any) {
     }, [updateNote])
 
     const handleEditToggle = () => {
-
         if (isEditing) {
             setUpdateNote(true)
             setIsEditing(false)
@@ -107,7 +113,7 @@ function BigTodo({ noteData, sectionID }: any) {
         else {
             setIsEditing(true)
         }
-
+        setNoteState(!noteState)
     };
     const handlePinToggle = () => {
         const payload = { id, sectionID };
@@ -197,6 +203,7 @@ function BigTodo({ noteData, sectionID }: any) {
 
     const handleCopyEvent = () => {
         navigator.clipboard.writeText(`${noteTitle}\n\n${note}`);
+        setCopyStatus(true);
     }
     const handleMagicTitle = () => {
         setMagicTitleLoading(true)
@@ -442,7 +449,7 @@ function BigTodo({ noteData, sectionID }: any) {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.25 }}
-                        className="z-50 rounded-xl border  bg-accent p-2 shadow-lg"
+                        className="z-[60] rounded-xl border  bg-accent p-2 shadow-lg"
                     >
                         <Calendar
                             mode="single"
@@ -462,7 +469,7 @@ function BigTodo({ noteData, sectionID }: any) {
                             }}
                             disabled={{ before: today }} // 1️⃣ Disable past days
                         />
-                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-40">
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-[65]">
                             <div
                                 className="size-10 bg-accent"
                                 style={{
@@ -486,7 +493,7 @@ function BigTodo({ noteData, sectionID }: any) {
         {ConfirmDialog}
         {/* uploader component */}
         {
-            showUploader && session && <div className='fixed overflow-hidden inset-0 z-50 h-screen  flex items-center justify-center bg-black/90 text-gray-50'>
+            showUploader && session && <div className='fixed overflow-hidden inset-0 z-[55] h-screen  flex items-center justify-center bg-black/90 text-gray-50'>
                 <AnimatePresence>
                     {showUploader && (
                         <motion.div
@@ -494,7 +501,7 @@ function BigTodo({ noteData, sectionID }: any) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="fixed overflow-hidden inset-0 z-50 h-screen flex items-center justify-center bg-background/70 text-gray-50"
+                            className="fixed overflow-hidden inset-0 z-[56] h-screen flex items-center justify-center bg-background/70 text-gray-50"
                         >
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -551,7 +558,7 @@ function BigTodo({ noteData, sectionID }: any) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.25 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-sm"
+                        className="fixed inset-0 z-[45] flex items-center justify-center"
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8, y: 30 }}
@@ -563,7 +570,7 @@ function BigTodo({ noteData, sectionID }: any) {
                                 damping: 20,
                                 stiffness: 220,
                             }}
-                            className="relative w-96"
+                            className="relative w-96 z-[55]"
                         >
                             <PasswordDialog
                                 defOpen={showPasswordDialog}
@@ -576,7 +583,7 @@ function BigTodo({ noteData, sectionID }: any) {
             </AnimatePresence>
         }
         {/* all tool tips */}
-        <NavigationMenu className="scale-90 md:scale-100 flex w-full">
+        <NavigationMenu className={`flex w-full ${cols == 3 ? "scale-90" : "scale-90 md:scale-100"}`}>
             <NavigationMenuList className="">
                 <TooltipProvider>
 
@@ -752,8 +759,6 @@ function BigTodo({ noteData, sectionID }: any) {
                                             state={copyStatus}
                                             setState={setCopyStatus}
                                         />
-
-
                                     </NavigationMenuLink>
                                 </TooltipTrigger>
                                 <TooltipContent
@@ -856,6 +861,24 @@ function BigTodo({ noteData, sectionID }: any) {
                                     <p>{!magicDescriptionLoading ? "du-be-doos" : "Loading"}</p>
                                 </TooltipContent>
                             </Tooltip>
+                            {/* maximize button for full screen modal */}
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <NavigationMenuLink
+                                        className="flex size-8 items-center justify-center p-1.5"
+                                        onClick={() => setShowFullScreen(true)}
+                                    >
+                                        <Maximize2 size={20} aria-hidden="true" />
+                                        <span className="sr-only">Full screen</span>
+                                    </NavigationMenuLink>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                    side="bottom"
+                                    className="px-2 py-1 text-xs"
+                                >
+                                    <p>Full screen</p>
+                                </TooltipContent>
+                            </Tooltip>
                         </NavigationMenuItem>}
 
                 </TooltipProvider>
@@ -870,7 +893,7 @@ function BigTodo({ noteData, sectionID }: any) {
             {/* title of big todo */}
             <QuickInput id={id} placeHolder="Note Title" className="p-2 text-ring text-sm border-none bg-transparent shadow-none" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isEditing} />
             {/* content of big todo */}
-            <AutoGrowTextarea className={`border-t-1 border-b-0 border-r-0 border-l-0 ${!isEditing && borderColor}`} id={id} value={content} setContent={setContent} disabled={isEditing}>Your notes' description...</AutoGrowTextarea>
+            <AutoGrowTextarea cols={cols} className={`border-t-1 border-b-0 border-r-0 border-l-0 ${!isEditing && borderColor}`} id={id} value={content} setContent={setContent} disabled={isEditing}>Your notes' description...</AutoGrowTextarea>
 
 
             {/* images */}
@@ -923,7 +946,250 @@ function BigTodo({ noteData, sectionID }: any) {
         )
     }
 
-    return body
+    return (
+        <>
+            {body}
+
+            {/* Full Screen Modal */}
+            <AnimatePresence>
+                {showFullScreen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-md"
+                        onClick={() => setShowFullScreen(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{
+                                duration: 0.4,
+                                type: "spring",
+                                damping: 25,
+                                stiffness: 300
+                            }}
+                            className="fixed inset-1 sm:inset-2 md:inset-4 lg:inset-6 bg-gradient-to-br from-background via-background to-muted/20 border border-border/50 shadow-2xl rounded-2xl sm:rounded-3xl flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Header with Title and Close */}
+                            <div className="flex items-center justify-between p-6 border-b border-border/20 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-t-2xl sm:rounded-t-3xl">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <SquarePen size={16} />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-2xl font-bold text-foreground">Note Editor</h1>
+                                        <p className="text-sm text-muted-foreground">Full screen editing mode</p>
+                                    </div>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setShowFullScreen(false)}
+                                    className="h-10 w-10 rounded-full  transition-colors"
+                                >
+                                    <Minimize2 size={20} />
+                                </Button>
+                            </div>
+
+                            {/* Top Toolbar */}
+                            <div className="border-b border-border/20 bg-muted/30 p-2 md:p-4">
+                                <div className="flex items-center justify-center gap-1 md:gap-2">
+                                    <TooltipProvider delayDuration={200}>
+                                        {/* Edit/Save Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant={isEditing ? "default" : "outline"}
+                                                    size="lg"
+                                                    onClick={handleEditToggle}
+                                                    className="h-10 w-10 md:h-12 md:w-auto px-3 md:px-6 gap-1 md:gap-2 text-xs md:text-sm"
+                                                >
+                                                    {noteState ? <Pencil size={18} className="md:w-5 md:h-5" /> : <Save size={18} className="md:w-5 md:h-5" />}
+                                                    <span className="hidden md:inline">{noteState ? "Edit" : "Save"}</span>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="px-3 py-2 text-sm">
+                                                <p>{isEditing ? "Save changes" : "Edit note"}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+
+                                        {/* Magic Title Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    size="lg"
+                                                    onClick={handleMagicTitle}
+                                                    disabled={magicTitleLoading}
+                                                    className="h-10 w-10 md:h-12 md:w-auto px-3 md:px-6 gap-1 md:gap-2 ml-1 md:ml-2 text-xs md:text-sm"
+                                                >
+                                                    {magicTitleLoading ? (
+                                                        <Loader2 size={18} className="animate-spin md:w-5 md:h-5" />
+                                                    ) : (
+                                                        <WandSparkles size={18} className="md:w-5 md:h-5" />
+                                                    )}
+                                                    <span className="hidden md:inline">Magic Title</span>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="px-3 py-2 text-sm">
+                                                <p>Generate AI title</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+
+                                        {/* Magic Content Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    size="lg"
+                                                    onClick={handleMagicNote}
+                                                    disabled={magicDescriptionLoading}
+                                                    className="h-10 w-10 md:h-12 md:w-auto px-3 md:px-6 gap-1 md:gap-2 ml-1 md:ml-2 text-xs md:text-sm"
+                                                >
+                                                    {magicDescriptionLoading ? (
+                                                        <Loader2 size={18} className="animate-spin md:w-5 md:h-5" />
+                                                    ) : (
+                                                        <Sparkles size={18} className="md:w-5 md:h-5" />
+                                                    )}
+                                                    <span className="hidden md:inline">Magic Content</span>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="px-3 py-2 text-sm">
+                                                <p>Generate AI content</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+
+                                        {/* Copy Button */}
+                                        <Tooltip open={copyStatus}>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    size="lg"
+                                                    onClick={handleCopyEvent}
+                                                    className="h-10 w-10 md:h-12 md:w-auto px-3 md:px-6 gap-1 md:gap-2 ml-1 md:ml-2 text-xs md:text-sm"
+                                                >
+                                                    {copyStatus ? <CopyCheck size={18} className="text-green-500 md:w-5 md:h-5" /> : <Copy size={18} className="md:w-5 md:h-5" />}
+                                                    <span className="hidden md:inline">{copyStatus ? "Copied!" : "Copy"}</span>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="px-3 py-2 text-sm">
+                                                <p>{copyStatus ? "Copied to clipboard!" : "Copy note content"}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+
+                                        {/* Delete Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    size="lg"
+                                                    onClick={handleDelete}
+                                                    className="h-10 w-10 md:h-12 md:w-auto px-3 md:px-6 gap-1 md:gap-2 ml-1 md:ml-2 text-xs md:text-sm"
+                                                >
+                                                    <Trash size={18} className="md:w-5 md:h-5" />
+                                                    <span className="hidden md:inline">Delete</span>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="px-3 py-2 text-sm">
+                                                <p>Delete note</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
+                            </div>
+
+                            {/* Main Content */}
+                            <div className="flex-1 overflow-y-auto">
+                                <div className="max-w-5xl mx-auto p-8 space-y-8">
+                                    {/* Title Section */}
+                                    <div className="space-y-4">
+                                        <label className="text-sm font-semibold text-primary uppercase tracking-wide">Title</label>
+                                        <QuickInput
+                                            id={`${id}-fullscreen`}
+                                            placeHolder="Enter your note title..."
+                                            className="text-2xl font-bold border-0 border-b-2 border-border/30 bg-transparent focus:border-primary px-0 py-3 rounded-none focus:ring-0"
+                                            value={title}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                            disabled={isEditing}
+                                        />
+                                    </div>
+
+                                    {/* Content Section */}
+                                    <div className="">
+                                        <p className={`${!content && "pb-2"} text-sm font-semibold text-primary uppercase tracking-wide`}>Content</p>
+                                        <AutoGrowTextarea
+                                            className={`text-lg leading-relaxed border-0 bg-transparent px-0 py-3 rounded-none focus:ring-0 ${!isEditing && borderColor}`}
+                                            id={`${id}-fullscreen-content`}
+                                            value={content}
+                                            setContent={setContent}
+                                            disabled={isEditing}
+                                            max={true}
+                                        >
+                                            Write your note content here...
+                                        </AutoGrowTextarea>
+                                    </div>
+
+                                    {/* Images Section */}
+                                    {images.length > 0 && (
+                                        <div className="space-y-4">
+                                            <label className="text-sm font-semibold text-primary uppercase tracking-wide">Images</label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {images.map((image, index) => (
+                                                    <div className="group relative overflow-hidden rounded-xl border border-border/20 bg-muted/20" key={index}>
+                                                        <div className="aspect-video">
+                                                            <Image
+                                                                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                                                src={image?.secure_url}
+                                                                alt={image?.public_id}
+                                                                width={400}
+                                                                height={300}
+                                                                onClick={() => setShowCarousel(true)}
+                                                            />
+                                                        </div>
+                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteImage(image.public_id);
+                                                            }}
+                                                            className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg"
+                                                        >
+                                                            <Trash size={16} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Footer Stats */}
+                                    <div className="flex items-center justify-between pt-8 border-t border-border/20">
+                                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-primary" />
+                                                <span>{countWordsAndChars(content).characters} characters</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-primary" />
+                                                <span>{countWordsAndChars(content).words} words</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                            <TimeDisplay timestamp={Number(date)} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    )
 }
 
 export default memo(BigTodo)

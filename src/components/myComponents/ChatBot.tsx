@@ -395,18 +395,18 @@ const ChatBot = memo(() => {
     return (
         <>
             {/* Floating assistant button */}
-            <div className="fixed bottom-6 right-6 z-50">
+            <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
                 <Heartbeatdiv delay={0}>
                     <button
                         id="assistant-fab"
                         aria-label="Open assistant"
                         onClick={toggleOpen}
-                        className="shadow-md border bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border-neutral-200 dark:border-neutral-800 rounded-full w-14 h-14 flex items-center justify-center hover:opacity-90 transition-opacity"
+                        className="shadow-md border bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border-neutral-200 dark:border-neutral-800 rounded-full w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 flex items-center justify-center hover:opacity-90 transition-opacity"
                     >
                         {isLoading ? (
-                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <Loader2 className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 animate-spin" />
                         ) : (
-                            <MessageCircle className="w-6 h-6" />
+                            <MessageCircle className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
                         )}
                     </button>
                 </Heartbeatdiv>

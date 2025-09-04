@@ -37,7 +37,10 @@ import {
   NotebookPen,
   Info,
   InfoIcon,
-  Calendar
+  Calendar,
+  Menu,
+  Link,
+  Trash
 } from "lucide-react"
 
 import Toggler from "../UniversalToggler"
@@ -46,13 +49,21 @@ import { useDispatch } from "react-redux"
 import { clearAllSections, createSection } from "@/store/features/notezSlice"
 import { toast } from "sonner"
 import { clearAllQuickees } from "@/store/features/quickySlice"
+import { clearAllLinks } from "@/store/features/bookmarkSlice"
 import useConfirmDialog from "../AlertComponent"
 import { useTheme } from "next-themes"
+import { clearAllCalendarTodos } from "@/store/features/calendarTodosSlice"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { InstructionsModal } from "@/components/myComponents/InstructionsModal"
 import { motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 // Language options
 const themeList = [
   { value: "light", label: "Summer" },
@@ -120,6 +131,24 @@ export default function Component() {
     }
   }
 
+  const handleClearCalendar = async () => {
+    setConfirmationText("Do you really want to clear all calendars?")
+    const confirmation = await confirm()
+    if (confirmation) {
+      dispatch(clearAllCalendarTodos())
+      toast.success("All calendars cleared successfully!")
+    }
+  }
+
+  const handleClearLinks = async () => {
+    setConfirmationText("Do you really want to clear all links?")
+    const confirmation = await confirm()
+    if (confirmation) {
+      dispatch(clearAllLinks())
+      toast.success("All links cleared successfully!")
+    }
+  }
+
 
   const handleTheme = (value: string) => {
     if (value == "special") {
@@ -130,26 +159,38 @@ export default function Component() {
     }
   }
   const pathname = usePathname();
+  const router = useRouter();
   const isStreakCalendarPage = pathname === '/streak-calendar';
 
   const handleStreakCalendar = () => {
-    window.location.href = '/streak-calendar';
+    router.push('/streak-calendar');
   };
 
   const handleBackToWorkspace = () => {
-    window.location.href = '/workspace';
+    router.push('/workspace');
   };
-
+  // Simulate Ctrl+B keyboard press to toggle sidebar
+  const menuOnClick = () => {
+    const event = new KeyboardEvent('keydown', {
+      key: 'b',
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true
+    });
+    document.dispatchEvent(event);
+  }
   // Navigation links with icons for desktop icon-only navigation
   const navigationLinks = [
-    { onClick: handleCreateNewSection, label: "Section", icon: CirclePlus, active: true },
-    { onClick: handleClearTodo, label: "Quickees", icon: RotateCcw },
-    { onClick: handleClearSection, label: "Sections", icon: Trash2 },
+    { onClick: handleCreateNewSection, label: "Create Section", icon: CirclePlus, active: true },
+    { onClick: handleClearTodo, label: "Reset Quickees", icon: RotateCcw },
+    { onClick: handleClearSection, label: "Reset Sections", icon: Trash2 },
+    { onClick: handleClearCalendar, label: "Reset Calendar", icon: Calendar },
+    { onClick: handleClearLinks, label: "Reset bookmark", icon: Link },
     { onClick: handleStreakCalendar, label: "Streaks", icon: Calendar },
     { onClick: () => setManualOpen(true), label: "Help", icon: InfoIcon },
   ]
   return (
-    <header className="border rounded-md px-4 md:px-6">
+    <header className="border rounded-md px-2 md:px-6">
       {ConfirmDialog}
       <InstructionsModal
         isOpen={manualOpen}
@@ -157,18 +198,20 @@ export default function Component() {
       />
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
-        <div className="flex flex-1 items-center gap-3">
+        <div className="flex flex-1 items-center gap-2">
 
           {/* Mobile menu trigger */}
           <Button
-            className="group size-8 md:hidden pointer-events-none"
+            className="group size-8 md:hidden"
             variant="ghost"
             size="icon"
-            disabled
+            onClick={menuOnClick}
           >
+            <Menu
+              className="text-foreground"
+            />
           </Button>
           <div className="flex items-center gap-6">
-
             <div
               className=" relative flex items-center gap-2 font-semibold text-xl text-primary/90 transition-colors duration-200"
             >
@@ -241,74 +284,38 @@ export default function Component() {
                         <p>{!createNewSection ? "Create New Section" : "Creating"}</p>
                       </TooltipContent>
                     </Tooltip>
-                    {/* toggler for clear todos */}
-                    <Tooltip open={clearTodo ? true : undefined}>
-                      <TooltipTrigger asChild>
-                        <NavigationMenuLink
-                          className="flex size-8 items-center justify-center p-1.5"
-                          onClick={handleClearTodo}
+                    {/* reset dropdown */}
+                    <DropdownMenu>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <NavigationMenuLink className="flex size-8 items-center justify-center p-1.5">
+                              <RotateCcw size={16} />
+                            </NavigationMenuLink>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="px-2 py-1 text-xs"
                         >
-                          <Toggler
-                            primaryIcon={
-                              <Loader2
-                                size={16}
-                                className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
-                                aria-hidden="true"
-                              />
-                            }
-                            secondaryIcon={
-                              <NotebookPen
-                                size={16}
-                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                                aria-hidden="true"
-                              />
-                            }
-                            state={clearTodo}
-                            setState={setClearTodo}
-                          />
-                        </NavigationMenuLink>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="bottom"
-                        className="px-2 py-1 text-xs"
-                      >
-                        <p>{!createNewSection ? "Reset Quickees" : "Resetting"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    {/* toggler for clear sections */}
-                    <Tooltip open={clearSection ? true : undefined}>
-                      <TooltipTrigger asChild>
-                        <NavigationMenuLink
-                          className="flex size-8 items-center justify-center p-1.5"
-                          onClick={handleClearSection}
-                        >
-                          <Toggler
-                            primaryIcon={
-                              <Loader2
-                                size={16}
-                                className="animate-spin absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0  text-green-500"
-                                aria-hidden="true"
-                              />
-                            }
-                            secondaryIcon={
-                              <RotateCcw
-                                size={16}
-                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-                                aria-hidden="true"
-                              />
-                            }
-                            state={clearSection}
-                            setState={setClearSection}
-                          />
-                        </NavigationMenuLink>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="bottom"
-                        className="px-2 py-1 text-xs"
-                      >
-                        <p>{!createNewSection ? "Reset Sections" : "Resetting"}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                          <p>Reset Options</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <DropdownMenuContent className="min-w-[140px]">
+                        <DropdownMenuItem onClick={handleClearTodo} className="px-3 py-2">
+                          Reset Quickees
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleClearSection} className="px-3 py-2">
+                          Reset Sections
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleClearCalendar} className="px-3 py-2">
+                          Reset Calendar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleClearLinks} className="px-3 py-2">
+                          Reset bookmark
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     {/* toggler for streak calendar */}
                     <Tooltip >
                       <TooltipTrigger asChild>
@@ -446,7 +453,9 @@ export default function Component() {
             </SelectContent>
           </Select>
           {/* User menu */}
-          <UserMenu />
+          <span className="grid content-center mr-1.5">
+            <UserMenu />
+          </span>
         </div>
       </div>
     </header>

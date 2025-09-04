@@ -36,7 +36,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
     }, [toggleOpen]);
 
     const sidebarBodyClass = useMemo(() => (
-        `h-full border-r border-border/50 bg-card transition-all duration-300 ease-in-out shadow-lg ${open ? "md:absolute md:w-1/2 z-50 lg:relative lg:w-auto" : ""}`
+        `h-full border-r border-border/50 bg-card transition-all duration-300 ease-in-out shadow-lg ${open ? "md:absolute md:w-1/2 z-30 lg:relative lg:w-auto" : ""}`
     ), [open]);
 
     const menuHeader = useMemo(() => (
@@ -88,7 +88,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
     return (
         <div
             className={cn(
-                "mx-auto flex w-full flex-1 flex-col bg-background md:flex-row h-screen w-screen",
+                "mx-auto flex w-full flex-1 flex-col bg-background md:flex-row h-screen",
             )}
         >
             <motion.div
@@ -99,7 +99,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
                 <Sidebar open={open} animate={true} setOpen={setOpen}>
                     <SidebarBody className={sidebarBodyClass}>
                         {/* Header */}
-                        <div className={`w-full h-fit p-4 pb-2 ${open ? "flex items-center justify-between" : "flex justify-center"}`}>
+                        <div className={`w-full h-fit md:p-4 pb-2 ${open ? "flex items-center justify-between" : "flex justify-center"}`}>
                             {menuHeader}
                             <div className="flex items-center">
                                 {toggleIcon}

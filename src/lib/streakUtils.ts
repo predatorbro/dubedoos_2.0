@@ -14,7 +14,7 @@ export interface StreakCalendars {
 }
 
 // LocalStorage key
-export const STREAK_CALENDARS_KEY = 'dubedoos_streak_calendars';
+export const STREAK_CALENDARS_KEY = 'todosForCalendar';
 
 // Utility functions for streak calculations
 export const calculateCurrentStreak = (completedDates: string[]): number => {
@@ -132,6 +132,21 @@ export const deleteStreakCalendar = (calendarId: string): boolean => {
   if (calendars[calendarId]) {
     delete calendars[calendarId];
     saveStreakCalendars(calendars);
+
+    // Also delete associated todos from localStorage
+    if (typeof window !== "undefined") {
+      try {
+        const todosData = localStorage.getItem("calendarTodos");
+        if (todosData) {
+          const todos = JSON.parse(todosData);
+          const filteredTodos = todos.filter((todo: any) => todo.calendarId !== calendarId);
+          localStorage.setItem("calendarTodos", JSON.stringify(filteredTodos));
+        }
+      } catch (error) {
+        console.error('Error deleting calendar todos:', error);
+      }
+    }
+
     return true;
   }
   return false;

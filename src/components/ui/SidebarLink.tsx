@@ -136,7 +136,7 @@ export const TabletSidebar = memo(({
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={cn(
-              "h-full w-full bg-card border-r border-border/50 z-[100] flex flex-col shadow-lg",
+              "h-full w-full bg-card border-r border-border/50 z-20 flex flex-col shadow-lg",
             )}
           >
             {children}
@@ -162,18 +162,6 @@ export const MobileSidebar = memo(({
         )}
         {...props}
       >
-        <div className="absolute z-20 top-7 left-8 flex">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-lg hover:bg-accent transition-colors cursor-pointer"
-          >
-            <Menu
-              className="text-foreground"
-              onClick={() => setOpen(!open)}
-            />
-          </motion.div>
-        </div>
         <AnimatePresence>
           {open && (
             <motion.div
@@ -185,7 +173,7 @@ export const MobileSidebar = memo(({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-card p-6 z-[100] flex flex-col",
+                "fixed h-full w-full inset-0 bg-card p-6 z-20 flex flex-col",
                 className
               )}
             >
@@ -315,7 +303,7 @@ const SidebarLinkComponent = () => {
       ))}
 
       {/* Empty state */}
-      {categories.length === 0 && (
+      {categories.length === 0 && open && (
         <motion.div
           className="text-center py-8 px-4"
           initial={{ opacity: 0, y: 20 }}

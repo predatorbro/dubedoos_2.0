@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Plus, Link, Settings } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -38,17 +39,36 @@ const LinkSaverModal = memo(() => {
     const [favicon, setFavicon] = useState<string | null>(null);
     const [category, setCategory] = useState("");
     const [newCategory, setNewCategory] = useState("");
+    const [urlError, setUrlError] = useState("");
 
     // Derive categories from Links using useMemo instead of local state
     const categories = useMemo(() => Links.map(link => link.category), [Links]);
 
     const [selectedCat, setSelectedCat] = useState("");
 
-    // favicon fetcher
-    const fetchFavicon = useCallback((link: string) => {
+    // URL validation function
+    const isValidUrl = useCallback((string: string) => {
         try {
-            const domain = new URL(link).origin;
-            return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }, []);
+
+    // favicon fetcher with validation
+    const fetchFavicon = useCallback((link: string) => {
+        if (!link.trim()) return null;
+
+        try {
+            // Add protocol if missing
+            let urlToCheck = link;
+            if (!urlToCheck.startsWith('http://') && !urlToCheck.startsWith('https://')) {
+                urlToCheck = 'https://' + urlToCheck;
+            }
+
+            const url = new URL(urlToCheck);
+            return `https://www.google.com/s2/favicons?domain=${url.origin}&sz=128`;
         } catch {
             return null;
         }
@@ -56,11 +76,25 @@ const LinkSaverModal = memo(() => {
 
     const handleUrlChange = useCallback((val: string) => {
         setUrl(val);
-        const icon = fetchFavicon(val);
-        setFavicon(icon);
-    }, [fetchFavicon]);
+
+        // Live validation
+        if (val.trim() && !isValidUrl(val.startsWith('http') ? val : 'https://' + val)) {
+            setUrlError("Please enter a valid URL");
+            setFavicon(null);
+        } else {
+            setUrlError("");
+            const icon = fetchFavicon(val);
+            setFavicon(icon);
+        }
+    }, [fetchFavicon, isValidUrl]);
 
     const handleSave = useCallback(() => {
+        // Normalize URL: add https:// if missing
+        let normalizedUrl = url;
+        if (normalizedUrl && !normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+            normalizedUrl = 'https://' + normalizedUrl;
+        }
+
         // Resolve category: prefer newCategory text, else selected category
         let finalCategory = newCategory ? newCategory : category;
 
@@ -82,13 +116,13 @@ const LinkSaverModal = memo(() => {
         let updated: typeof Links;
         if (existing) {
             updated = Links.map(c => c.category === finalCategory
-                ? { ...c, links: [...c.links, { label, url, favicon }] }
+                ? { ...c, links: [...c.links, { label, url: normalizedUrl, favicon }] }
                 : c
             );
         } else {
             updated = [
                 ...Links,
-                { category: finalCategory, links: [{ label, url, favicon }] },
+                { category: finalCategory, links: [{ label, url: normalizedUrl, favicon }] },
             ];
         }
         dispatch(setBookmarkLinks(updated));
@@ -150,9 +184,10 @@ const LinkSaverModal = memo(() => {
                 <DialogTrigger asChild>
                     <Button
                         variant="outline"
-                        className="w-full h-full outline-none border-0 hover:bg-accent rounded-none border-t m-0 transition-colors"
+                        className="w-full scale-90 h-12 flex items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-primary/20 hover:border-primary/30 transition-all duration-200"
                     >
-                        + Add / Manage Links
+                        <Plus className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">Add / Manage Links</span>
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md rounded-2xl shadow-xl bg-card border border-border scale-90 sm:scale-100">
@@ -218,16 +253,22 @@ const LinkSaverModal = memo(() => {
                                     value={label}
                                     onChange={handleLabelChange}
                                 />
-                                <Input
-                                    placeholder="https://example.com"
-                                    value={url}
-                                    onChange={(e) => handleUrlChange(e.target.value)}
-                                />
+                                <div className="space-y-1">
+                                    <Input
+                                        placeholder="https://example.com"
+                                        value={url}
+                                        onChange={(e) => handleUrlChange(e.target.value)}
+                                        className={urlError ? "border-destructive" : ""}
+                                    />
+                                    {urlError && (
+                                        <p className="text-sm text-destructive">{urlError}</p>
+                                    )}
+                                </div>
 
                                 {/* Category selection */}
                                 <div className="grid grid-cols-2 gap-2 items-center">
 
-                                    <Select value={category} onValueChange={setCategory} defaultValue="" disabled={newCategory.length > 0}>
+                                    <Select value={category} onValueChange={setCategory} defaultValue="" disabled={Boolean(newCategory)}>
                                         <SelectTrigger className="flex-1" disabled={categories.length === 0}>
                                             <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select Category"} />
                                         </SelectTrigger>
@@ -266,7 +307,7 @@ const LinkSaverModal = memo(() => {
                         <div className="grid gap-4">
                             {/* Category Selector */}
                             <Select value={selectedCat} onValueChange={setSelectedCat}>
-                                <SelectTrigger disabled={categories.length === 0}>
+                                <SelectTrigger disabled={Boolean(categories.length === 0)}>
                                     <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select Category"} />
                                 </SelectTrigger>
                                 <SelectContent>

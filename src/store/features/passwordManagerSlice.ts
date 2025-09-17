@@ -8,6 +8,8 @@ export interface PasswordEntry {
   link?: string;
   description?: string;
   favicon?: string;
+  pinned?: boolean;
+  createdAt?: number;
 }
 
 interface PasswordManagerState {
@@ -37,8 +39,14 @@ const passwordManagerSlice = createSlice({
     loadPasswords: (state, action: PayloadAction<PasswordEntry[]>) => {
       state.passwords = action.payload;
     },
+    togglePin: (state, action: PayloadAction<string>) => {
+      const password = state.passwords.find(p => p.id === action.payload);
+      if (password) {
+        password.pinned = !password.pinned;
+      }
+    },
   },
 });
 
-export const { addPassword, updatePassword, deletePassword, loadPasswords } = passwordManagerSlice.actions;
+export const { addPassword, updatePassword, deletePassword, loadPasswords, togglePin } = passwordManagerSlice.actions;
 export default passwordManagerSlice.reducer;

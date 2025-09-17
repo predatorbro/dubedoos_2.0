@@ -478,6 +478,12 @@ const CreateStreakModal: React.FC<{
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      onClick={(e) => {
+        // Only close if clicking on the overlay itself, not on child elements
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <motion.div
         className="bg-card p-6 rounded-lg border max-w-md w-full"

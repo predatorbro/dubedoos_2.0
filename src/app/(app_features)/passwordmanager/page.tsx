@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { addPassword, deletePassword, loadPasswords } from '@/store/features/passwordManagerSlice';
+import { addPassword, deletePassword, loadPasswords, togglePin } from '@/store/features/passwordManagerSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Copy, Plus, Search, Trash2, ExternalLink, Globe } from 'lucide-react';
+import { Eye, EyeOff, Copy, Plus, Search, Trash2, ExternalLink, Globe, Pin, PinOff, X } from 'lucide-react';
 import NavBar from '@/components/myComponents/NavBar';
 import { motion } from 'framer-motion';
 
@@ -22,6 +22,8 @@ interface PasswordEntry {
   link?: string;
   description?: string;
   favicon?: string;
+  pinned?: boolean;
+  createdAt?: number;
 }
 
 export default function PasswordManager() {
@@ -59,6 +61,8 @@ export default function PasswordManager() {
       link: newPassword.link,
       description: newPassword.description,
       favicon,
+      pinned: false,
+      createdAt: Date.now(),
     };
     dispatch(addPassword(passwordEntry));
     setNewPassword({});
@@ -97,11 +101,22 @@ export default function PasswordManager() {
     toast.success('Password deleted successfully');
   };
 
-  const filteredPasswords = passwords.filter(password =>
-    password.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (password.username && password.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (password.description && password.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredPasswords = passwords
+    .filter(password =>
+      password.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (password.username && password.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (password.description && password.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      // Pinned passwords come first
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+
+      // Within pinned/unpinned groups, sort by creation date (latest first)
+      const aTime = a.createdAt || 0;
+      const bTime = b.createdAt || 0;
+      return bTime - aTime;
+    });
 
   return (
     <div className="min-h-screen bg-background">
@@ -208,20 +223,39 @@ export default function PasswordManager() {
                 placeholder="Search passwords..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className={`pl-10 ${searchTerm ? 'pr-10' : ''}`}
                 autoComplete="off"
               />
+              {searchTerm && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setSearchTerm('')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            layout
+          >
             {filteredPasswords.map((password) => (
               <motion.div
                 key={password.id}
+                layout
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{
+                  duration: 0.3,
+                  layout: { duration: 0.3 }
+                }}
               >
-                <Card className='h-full'>
+                <Card className="h-full">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div className="flex items-center gap-2">
                       {password.favicon && password.favicon.startsWith('http') ? (
@@ -234,6 +268,17 @@ export default function PasswordManager() {
                       <CardTitle className="text-lg">{password.label}</CardTitle>
                     </div>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          dispatch(togglePin(password.id));
+                          toast.success(password.pinned ? 'Password unpinned' : 'Password pinned');
+                        }}
+                        className={password.pinned ? 'text-yellow-600 hover:text-yellow-700' : 'text-muted-foreground hover:text-foreground'}
+                      >
+                        {password.pinned ? <PinOff size={16} /> : <Pin size={16} />}
+                      </Button>
                       {password.link && (
                         <Button
                           variant="ghost"
@@ -302,7 +347,7 @@ export default function PasswordManager() {
                 </Card>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
           {filteredPasswords.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No passwords found. Add your first password!</p>

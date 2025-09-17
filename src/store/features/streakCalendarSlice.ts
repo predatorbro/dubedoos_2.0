@@ -25,11 +25,29 @@ const loadInitialState = (): StreakCalendarState => {
 
   try {
     const stored = localStorage.getItem(STREAK_CALENDARS_KEY);
-    const calendars: StreakCalendars = stored ? JSON.parse(stored) : {};
-    const calendarIds = Object.keys(calendars);
-    
+    let calendars: StreakCalendars = stored ? JSON.parse(stored) : {};
+
+    // Validate and sanitize loaded data
+    const sanitizedCalendars: StreakCalendars = {};
+    Object.entries(calendars).forEach(([id, calendar]) => {
+      if (calendar && typeof calendar === 'object' && calendar.id && calendar.title) {
+        sanitizedCalendars[id] = {
+          id: calendar.id,
+          title: calendar.title,
+          completedDates: Array.isArray(calendar.completedDates) ? calendar.completedDates : [],
+          currentStreak: typeof calendar.currentStreak === 'number' ? calendar.currentStreak : 0,
+          longestStreak: typeof calendar.longestStreak === 'number' ? calendar.longestStreak : 0,
+          createdDate: calendar.createdDate || new Date().toISOString().split('T')[0],
+          color: calendar.color || '#10B981',
+          description: calendar.description,
+        };
+      }
+    });
+
+    const calendarIds = Object.keys(sanitizedCalendars);
+
     return {
-      calendars,
+      calendars: sanitizedCalendars,
       currentCalendarId: calendarIds.length > 0 ? calendarIds[0] : '',
       isLoading: false,
     };

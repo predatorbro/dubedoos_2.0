@@ -61,7 +61,7 @@ const StreakCalendar: React.FC = () => {
     }
 
     // Check if we're completing or uncompleting today's date
-    const wasCompleted = currentCalendar.completedDates.includes(dateString);
+    const wasCompleted = currentCalendar.completedDates ? currentCalendar.completedDates.includes(dateString) : false;
     
     // Dispatch the toggle action
     dispatch(toggleDate({ calendarId: currentCalendarId, date: dateString }));
@@ -334,7 +334,7 @@ const StreakStats: React.FC<{ calendar: StreakData }> = ({ calendar }) => {
           <span className="text-sm font-medium">Total Completed</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold">{calendar.completedDates.length}</span>
+          <span className="text-2xl font-bold">{calendar.completedDates ? calendar.completedDates.length : 0}</span>
           <span className="text-lg">📅</span>
         </div>
       </motion.div>
@@ -362,7 +362,7 @@ const CalendarGrid: React.FC<{
   // Add all days of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const dateString = formatDate(new Date(year, month, day));
-    const isCompleted = calendar.completedDates.includes(dateString);
+    const isCompleted = calendar.completedDates ? calendar.completedDates.includes(dateString) : false;
     const isTodayDate = isToday(dateString);
     const isFuture = isFutureDate(dateString);
 

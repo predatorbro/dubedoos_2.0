@@ -18,7 +18,7 @@ export const STREAK_CALENDARS_KEY = 'todosForCalendar';
 
 // Utility functions for streak calculations
 export const calculateCurrentStreak = (completedDates: string[]): number => {
-  if (completedDates.length === 0) return 0;
+  if (!completedDates || completedDates.length === 0) return 0;
 
   const sortedDates = completedDates.sort();
   const today = new Date().toISOString().split('T')[0];
@@ -50,7 +50,7 @@ export const calculateCurrentStreak = (completedDates: string[]): number => {
 };
 
 export const calculateLongestStreak = (completedDates: string[]): number => {
-  if (completedDates.length === 0) return 0;
+  if (!completedDates || completedDates.length === 0) return 0;
 
   const sortedDates = completedDates.sort();
   let longestStreak = 1;
@@ -74,11 +74,11 @@ export const calculateLongestStreak = (completedDates: string[]): number => {
 };
 
 export const getTotalCompleted = (completedDates: string[]): number => {
-  return completedDates.length;
+  return completedDates ? completedDates.length : 0;
 };
 
 export const isDateCompleted = (date: string, completedDates: string[]): boolean => {
-  return completedDates.includes(date);
+  return completedDates ? completedDates.includes(date) : false;
 };
 
 export const toggleDate = (calendarId: string, date: string): StreakData | null => {

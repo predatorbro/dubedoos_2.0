@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/store/Provider";
 import AuthProvider from "@/components/myComponents/AuthProvider";
@@ -11,8 +11,8 @@ import { tr } from "date-fns/locale";
 import { ClickSparkWrapper } from "@/components/mage-ui/ClickSparkWrapper";
 import { ThemeProvider } from "@/components/Theme_Provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
@@ -36,7 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className=" scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans dark:text-gray-100`}
+        className={`${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans dark:text-gray-100`}
       >
         {/* auth provider */}
         <AuthProvider session={session}>

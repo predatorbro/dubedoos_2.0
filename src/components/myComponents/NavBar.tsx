@@ -40,7 +40,8 @@ import {
   Calendar,
   Menu,
   Link,
-  Trash
+  Trash,
+  Key
 } from "lucide-react"
 
 import Toggler from "../UniversalToggler"
@@ -161,9 +162,14 @@ export default function Component() {
   const pathname = usePathname();
   const router = useRouter();
   const isStreakCalendarPage = pathname === '/streak-calendar';
+  const isPasswordManagerPage = pathname === '/passwordmanager';
 
   const handleStreakCalendar = () => {
     router.push('/streak-calendar');
+  };
+
+  const handlePasswordManager = () => {
+    router.push('/passwordmanager');
   };
 
   const handleBackToWorkspace = () => {
@@ -187,6 +193,7 @@ export default function Component() {
     { onClick: handleClearCalendar, label: "Reset Calendar", icon: Calendar },
     { onClick: handleClearLinks, label: "Reset bookmark", icon: Link },
     { onClick: handleStreakCalendar, label: "Streaks", icon: Calendar },
+    { onClick: handlePasswordManager, label: "Password Manager", icon: Key },
     { onClick: () => setManualOpen(true), label: "Help", icon: InfoIcon },
   ]
   return (
@@ -244,8 +251,27 @@ export default function Component() {
               </TooltipContent>
             </Tooltip>
           )}
+          {/* Back button for password manager */}
+          {isPasswordManagerPage && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleBackToWorkspace}
+                  className="flex items-center gap-2 hover:bg-accent"
+                  variant="ghost"
+                  size="sm"
+                >
+                  <ChevronDown size={16} className="rotate-90" />
+                  <span className="hidden sm:inline">Back to Workspace</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="px-2 py-1 text-xs">
+                <p>Return to main workspace</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           {/* right navigation */}
-          {!isStreakCalendarPage && (
+          {!isStreakCalendarPage && !isPasswordManagerPage && (
             <NavigationMenu className="hidden sm:flex" >
               <NavigationMenuList className="gap-2" >
                 <TooltipProvider >
@@ -348,6 +374,40 @@ export default function Component() {
                         className="px-2 py-1 text-xs"
                       >
                         <p>Streak Calendar</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* toggler for password manager */}
+                    <Tooltip >
+                      <TooltipTrigger asChild>
+                        <NavigationMenuLink
+                          className="flex size-8 items-center justify-center p-1.5"
+                          onClick={handlePasswordManager}
+                        >
+                          <Toggler
+                            primaryIcon={
+                              <Key
+                                size={16}
+                                className="absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0 text-purple-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            secondaryIcon={
+                              <Key
+                                size={16}
+                                className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100 text-purple-500"
+                                aria-hidden="true"
+                              />
+                            }
+                            state={false}
+                            setState={() => { }}
+                          />
+                        </NavigationMenuLink>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="px-2 py-1 text-xs"
+                      >
+                        <p>Password Manager</p>
                       </TooltipContent>
                     </Tooltip>
                     {/* toggler for manual */}

@@ -64,14 +64,14 @@ function LeftSide() {
     ), [quickeesList]);
 
     return (
-        <div className="w-full md:w-[unset] md:min-w-1/2 xl:min-w-2/5 border rounded-md p-3 flex flex-col gap-3 h-[unset]">
+        <div className={`w-full md:w-[unset] md:min-w-1/2 xl:min-w-2/5 border rounded-md p-3 flex flex-col gap-3 ${quickeesList.length > 10 ? "h-fit":"h-[unset] "}`}>
             {/* add quickees */}
             <AddQuickee />
 
             {/* animated quickees list */}
             {quickeesList.length > 0 && (
                 <motion.div
-                    className="flex flex-col gap-3"
+                    className={`flex flex-col gap-3 ${quickeesList.length > 10 && "overflow-y-scroll h-[640px]"}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}

@@ -4,7 +4,6 @@ import StreakCalendar from '@/components/myComponents/StreakCalendar'
 import { GlobalLoader } from '@/components/GlobalLoader'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { SideBarCustom } from '@/components/myComponents/SideBarCustom'
 import ChatBot from '@/components/myComponents/ChatBot'
 
 function StreakCalendarPage() {
@@ -21,27 +20,25 @@ function StreakCalendarPage() {
 
       {/* Content with staggered animations */}
       <div className={isLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}>
-        <SideBarCustom>
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={!isLoading ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="p-2 xl:p-3">
-              <NavBar />
-            </div>
-          </motion.div>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={!isLoading ? { y: 0, opacity: 1 } : {}}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="p-2 xl:p-3">
+            <NavBar />
+          </div>
+        </motion.div>
 
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={!isLoading ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            <div className="px-2 xl:px-3">
-              <StreakCalendar />
-            </div>
-          </motion.div>
-        </SideBarCustom>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={!isLoading ? { y: 0, opacity: 1 } : {}}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <div className="container mx-auto px-4 py-8">
+            <StreakCalendar />
+          </div>
+        </motion.div>
         <ChatBot />
       </div >
     </>

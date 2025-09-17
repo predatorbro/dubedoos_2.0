@@ -373,7 +373,7 @@ const ChatBot = memo(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement | null;
             const isTyping = !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'C') && !isTyping) {
+            if (e.ctrlKey && (e.key === 'd' || e.key === 'D') && !isTyping) {
                 e.preventDefault();
                 setOpen(prev => !prev);
             }

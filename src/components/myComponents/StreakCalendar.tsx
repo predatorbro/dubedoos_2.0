@@ -4,19 +4,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus, Flame, Trophy, Calendar, Trash2, Edit3 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   StreakData,
   StreakCalendars,
-  loadStreakCalendars,
-  saveStreakCalendars,
-  toggleDate,
-  createNewStreakCalendar,
-  deleteStreakCalendar,
-  calculateCurrentStreak,
-  calculateLongestStreak,
-  getTotalCompleted,
   getFireEmojiCount,
-  getStreakColor,
   formatDate,
   getDaysInMonth,
   getFirstDayOfMonth,
@@ -24,15 +16,30 @@ import {
   isFutureDate,
   isPastDate,
 } from '@/lib/streakUtils';
+import {
+  loadCalendars,
+  setCurrentCalendar,
+  createCalendar,
+  deleteCalendar,
+  toggleDate,
+  selectAllCalendars,
+  selectCurrentCalendarId,
+  selectCurrentCalendar,
+  selectIsLoading,
+} from '@/store/features/streakCalendarSlice';
+import { RootState } from '@/store/store';
 import SpecButton from '../specButton';
 import useConfirmDialog from '../AlertComponent';
 
 const StreakCalendar: React.FC = () => {
-  const [calendars, setCalendars] = useState<StreakCalendars>({});
-  const [currentCalendarId, setCurrentCalendarId] = useState<string>('');
+  const dispatch = useDispatch();
+  const calendars = useSelector(selectAllCalendars);
+  const currentCalendarId = useSelector(selectCurrentCalendarId);
+  const currentCalendar = useSelector(selectCurrentCalendar);
+  const isLoading = useSelector(selectIsLoading);
+  
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Confirmation dialog for deletions
   const { confirm, ConfirmDialog } = useConfirmDialog({
@@ -41,19 +48,8 @@ const StreakCalendar: React.FC = () => {
 
   // Load calendars on mount
   useEffect(() => {
-    const loadedCalendars = loadStreakCalendars();
-    setCalendars(loadedCalendars);
-
-    // Set first calendar as current if exists
-    const calendarIds = Object.keys(loadedCalendars);
-    if (calendarIds.length > 0) {
-      setCurrentCalendarId(calendarIds[0]);
-    }
-
-    setIsLoading(false);
-  }, []);
-
-  const currentCalendar = currentCalendarId ? calendars[currentCalendarId] : null;
+    dispatch(loadCalendars());
+  }, [dispatch]);
 
   const handleDateToggle = useCallback((dateString: string) => {
     if (!currentCalendarId || !currentCalendar) return;
@@ -64,56 +60,48 @@ const StreakCalendar: React.FC = () => {
       return;
     }
 
-    const updatedCalendar = toggleDate(currentCalendarId, dateString);
-    if (updatedCalendar) {
-      setCalendars(prev => ({
-        ...prev,
-        [currentCalendarId]: updatedCalendar
-      }));
+    // Check if we're completing or uncompleting today's date
+    const wasCompleted = currentCalendar.completedDates.includes(dateString);
+    
+    // Dispatch the toggle action
+    dispatch(toggleDate({ calendarId: currentCalendarId, date: dateString }));
 
-      // Check if we're completing or uncompleting today's date
-      const wasCompleted = currentCalendar.completedDates.includes(dateString);
-      const isNowCompleted = updatedCalendar.completedDates.includes(dateString);
+    // Only show success messages when completing (not when uncompleting)
+    if (!wasCompleted) {
+      // Array of motivational success messages
+      const successMessages = [
+        "Great job! Today's task completed! 🔥",
+        "Awesome! Another day conquered! 💪",
+        "Fantastic! You're on fire! 🔥",
+        "Well done! Habit streak growing! 🌟",
+        "Excellent! Daily goal achieved! 🎯",
+        "Amazing! You're crushing it! 💥",
+        "Perfect! Day completed successfully! ✨",
+        "Outstanding! Keep the momentum! 🚀",
+        "Brilliant! Another win today! 🏆",
+        "Superb! You're unstoppable! ⚡"
+      ];
 
-      // Only show success messages when completing (not when uncompleting)
-      if (!wasCompleted && isNowCompleted) {
-        // Array of motivational success messages
-        const successMessages = [
-          "Great job! Today's task completed! 🔥",
-          "Awesome! Another day conquered! 💪",
-          "Fantastic! You're on fire! 🔥",
-          "Well done! Habit streak growing! 🌟",
-          "Excellent! Daily goal achieved! 🎯",
-          "Amazing! You're crushing it! 💥",
-          "Perfect! Day completed successfully! ✨",
-          "Outstanding! Keep the momentum! 🚀",
-          "Brilliant! Another win today! 🏆",
-          "Superb! You're unstoppable! ⚡"
-        ];
-
-        // Show celebration for milestones
-        if (updatedCalendar.currentStreak > 0 && updatedCalendar.currentStreak % 7 === 0) {
+      // Show celebration for milestones (we'll need to get updated streak from state)
+      setTimeout(() => {
+        const updatedCalendar = calendars[currentCalendarId];
+        if (updatedCalendar && updatedCalendar.currentStreak > 0 && updatedCalendar.currentStreak % 7 === 0) {
           toast.success(`🎉 ${updatedCalendar.currentStreak} day streak! Keep it up!`);
         } else {
           // Show random success message
           const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
           toast.success(randomMessage);
         }
-      }
-      // No message when uncompleting (unticking)
+      }, 100);
     }
-  }, [currentCalendarId, currentCalendar]);
+    // No message when uncompleting (unticking)
+  }, [currentCalendarId, currentCalendar, dispatch, calendars]);
 
   const handleCreateCalendar = useCallback((title: string, color: string, description?: string) => {
-    const newCalendar = createNewStreakCalendar(title, color, description);
-    setCalendars(prev => ({
-      ...prev,
-      [newCalendar.id]: newCalendar
-    }));
-    setCurrentCalendarId(newCalendar.id);
+    dispatch(createCalendar({ title, color, description }));
     setShowCreateModal(false);
     toast.success('New streak calendar created!');
-  }, []);
+  }, [dispatch]);
 
   const handleDeleteCalendar = useCallback(async (calendarId: string) => {
     const calendar = calendars[calendarId];
@@ -124,22 +112,9 @@ const StreakCalendar: React.FC = () => {
     if (!confirmed) return;
 
     // Proceed with deletion
-    if (deleteStreakCalendar(calendarId)) {
-      setCalendars(prev => {
-        const updated = { ...prev };
-        delete updated[calendarId];
-
-        // Switch to another calendar if current was deleted
-        if (currentCalendarId === calendarId) {
-          const remainingIds = Object.keys(updated);
-          setCurrentCalendarId(remainingIds.length > 0 ? remainingIds[0] : '');
-        }
-
-        return updated;
-      });
-      toast.success('Streak calendar deleted successfully');
-    }
-  }, [currentCalendarId, calendars, confirm]);
+    dispatch(deleteCalendar(calendarId));
+    toast.success('Streak calendar deleted successfully');
+  }, [calendars, confirm, dispatch]);
 
   const navigateMonth = useCallback((direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
@@ -179,7 +154,7 @@ const StreakCalendar: React.FC = () => {
         <StreakCalendarList
           calendars={calendars}
           currentCalendarId={currentCalendarId}
-          onSelectCalendar={setCurrentCalendarId}
+          onSelectCalendar={(id) => dispatch(setCurrentCalendar(id))}
           onDeleteCalendar={handleDeleteCalendar}
         />
       )}

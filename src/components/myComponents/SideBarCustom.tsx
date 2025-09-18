@@ -82,9 +82,6 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
     // Memoize the sidebar link component to prevent re-renders
     const memoizedSidebarLink = useMemo(() => <SidebarLink />, []);
 
-    // Memoize the link saver modal to prevent re-renders
-    const memoizedLinkSaver = useMemo(() => <LinkSaverModal />, []);
-
     return (
         <div
             className={cn(
@@ -123,7 +120,7 @@ export const SideBarCustom = memo(({ children }: { children: React.ReactNode }) 
                                     transition={{ duration: 0.2 }}
                                     className="px-4 pb-4"
                                 >
-                                    {memoizedLinkSaver}
+                                    <LinkSaverModal />
                                 </motion.div>
                             )}
                         </AnimatePresence>

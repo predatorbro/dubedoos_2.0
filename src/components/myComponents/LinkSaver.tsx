@@ -179,7 +179,7 @@ const LinkSaverModal = memo(() => {
     // Simple keyboard shortcut handler that toggles the modal
     const keyboardShortcutHandler = useMemo(() => {
         return (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === 'l' || e.key === 'L') {
+            if (e.ctrlKey && e.key === 'l' ||e.ctrlKey && e.key === 'L') {
                 e.preventDefault();
                 setOpen(prev => !prev);
             }

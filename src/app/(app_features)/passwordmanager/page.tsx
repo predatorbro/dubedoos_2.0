@@ -200,7 +200,7 @@ export default function PasswordManager() {
                       autoComplete="off"
                     />
                   </div>
-                  <div>
+                  <div className='overflow-hidden'>
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
@@ -339,8 +339,17 @@ export default function PasswordManager() {
                     </div>
                     {password.description && (
                       <div>
-                        <span className="text-sm text-muted-foreground">Description:</span>
-                        <p className="text-sm mt-1">{password.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Description:</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(password.description!, 'Description')}
+                          >
+                            <Copy size={14} />
+                          </Button>
+                        </div>
+                        <p className="text-sm mt-1 overflow-hidden text-ellipsis">{password.description}</p>
                       </div>
                     )}
                   </CardContent>

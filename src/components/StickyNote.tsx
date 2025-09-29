@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef } from "react"
 import { motion } from "framer-motion"
-import { X, Edit2, Pin } from "lucide-react"
+import { X, Edit2, Pin, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -91,7 +91,7 @@ const StickyNoteComponent = ({ note, index }: StickyNoteProps) => {
       }}
       exit={{ opacity: 0, scale: 0.8, rotate: randomTransform.rotation + 10 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className={`
+      className={`group
          relative max-h-52 h-full min-h-5max-h-52 w-full p-3 border-2 shadow-lg hover:shadow-xl transition-all duration-300
          ${getStickyNoteStyle()} ${getDarkStickyNoteStyle()}
          transform hover:scale-105 hover:rotate-1 cursor-pointer
@@ -103,8 +103,7 @@ const StickyNoteComponent = ({ note, index }: StickyNoteProps) => {
         borderStyle: 'solid',
         borderWidth: '2px',
         borderRadius: '0',
-      }}
-      onDoubleClick={handleDelete}
+      }} 
     >
       {/* Pushpin */}
       <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-10">
@@ -115,13 +114,13 @@ const StickyNoteComponent = ({ note, index }: StickyNoteProps) => {
       <div className="absolute top-1 right-1 z-20">
         <Button
           size="icon"
-          className="h-5 w-5 bg-transparent hover:bg-transparent opacity-0 hover:opacity-100 transition-opacity text-destructive p-0"
+          className="h-5 w-5 bg-transparent hover:bg-transparent opacity-0 group-hover:opacity-100 transition-opacity text-destructive p-0"
           onClick={(e) => {
             e.stopPropagation()
             handleDelete()
           }}
         >
-          <X size={10} />
+          <Trash  className="size-3" />
         </Button>
       </div>
 
